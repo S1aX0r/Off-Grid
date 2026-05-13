@@ -2576,6 +2576,66 @@ def gtfo_bins(gtfo_command, gtfo_options):
         elif gtfo_options == "file-write":
             bins.append("N/A")
 
+    elif gtfo_command == "ncftp":
+        if gtfo_options == "shell":
+            bins.append("ncftp\n!/bin/sh")
+        elif gtfo_options == "file-write":
+            bins.append("N/A")
+        elif gtfo_options == "file-read":
+            bins.append("N/A")
+        elif gtfo_options == "suid":
+            bins.append("N/A")
+        elif gtfo_options == "sudo":
+            bins.append("N/A")
+
+    elif gtfo_command == "needrestart":
+        if gtfo_options == "shell":
+            bins.append("echo '...' >/path/to/temp-file\nneedrestart -c /path/to/temp-file")
+        elif gtfo_options == "file-read":
+            bins.append("echo '...' >/path/to/temp-file\nneedrestart -c /path/to/temp-file")
+        elif gtfo_options == "file-write":
+            bins.append("echo '...' >/path/to/temp-file\nneedrestart -c /path/to/temp-file")
+        elif gtfo_options == "suid":
+            bins.append("echo '...' >/path/to/temp-file\nneedrestart -c /path/to/temp-file")
+        elif gtfo_options == "sudo":
+            bins.append("echo '...' >/path/to/temp-file\nneedrestart -c /path/to/temp-file")
+    
+    elif gtfo_command == "nft":
+        if gtfo_options == "shell":
+            bins.append("N/A")
+        elif gtfo_options == "file-read":
+            bins.append("nft -f /path/to/input-file")
+        elif gtfo_options == "file-write":
+            bins.append("N/A")
+        elif gtfo_options == "suid":
+            bins.append("N/A")
+        elif gtfo_options == "sudo":
+            bins.append("N/A")
+
+    elif gtfo_command == "nginx":
+        if gtfo_options == "sudo":
+            bins.append("nginx -c /path/to/temp-file")
+        elif gtfo_options == "shell":
+            bins.append("N/A")
+        elif gtfo_options == "file-read":
+            bins.append("nginx -c /path/to/temp-file")
+        elif gtfo_options == "file-write":
+            bins.append("nginx -t -c /path/to/temp-file")
+        elif gtfo_options == "suid":
+            bins.append("N/A")
+    
+    elif gtfo_command == "nice":
+        if gtfo_options == "shell":
+            bins.append("nice /bin/sh")
+        elif gtfo_options == "sudo":
+            bins.append("N/A")
+        elif gtfo_options == "suid":
+            bins.append("N/A")
+        elif gtfo_options == "file-read":
+            bins.append("N/A")
+        elif gtfo_options == "file-write":
+            bins.append("N/A")
+
 #If there are any other misconfigurations run the other option
     elif gtfo_command == "other":
         if gtfo_options == "shell": #This will print out hints for more GTFO bins!
@@ -2619,7 +2679,7 @@ def main():
         "mail", "make", "man", "mawk", "minicom", "more", "mosquitto", "mount",
         "msfconsole", "msgattrib", "msgcat", "msgconv", "msgfilter", "msgmerge",
         "msguniq", "mtr", "multitime", "mutt", "mv","mypy", "mysql", "nasm", "nawk",
-        "nc", "ncdu", "other",
+        "nc", "ncdu", "ncftp", "needrestart","nft", "nginx","nice", "other",
     }
 
     if start in ALLOWED:
