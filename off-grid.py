@@ -2958,6 +2958,29 @@ def gtfo_bins(gtfo_command, gtfo_options):
         else:
             bins.append("N/A")
 
+    elif gtfo_command == "python":
+        if gtfo_options == "shell":
+            bins.append("python -c 'import os; os.execl(""/bin/sh"", ""sh"")'")
+        elif gtfo_options == "file-write":
+            bins.append("python -c 'open(""/path/to/output-file"",""w+"").write(""DATA"")'")
+        elif gtfo_options == "file-read":
+            bins.append("python -c 'print(open(""/path/to/input-file"").read())'")
+        else:
+            bins.append("N/A")
+    
+    elif gtfo_command == "qpdf":
+        if gtfo_options == "file-read":
+            bins.append("qpdf --empty --add-attachment /path/to/input-file --key=x -- /path/to/output-file\nqpdf --show-attachment=x /path/to/output-file")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "rake":
+        if gtfo_options == "file-read":
+            bins.append("rake -f /path/to/input-file")
+        else:
+            bins.append("N/A")
+
+
 #If there are any other misconfigurations run the other option
     elif gtfo_command == "other":
         if gtfo_options == "shell": #This will print out hints for more GTFO bins!
@@ -3006,7 +3029,7 @@ def main():
         "openvpn", "openvt","opkg","pandoc", "paste", "pax", "pdflatex","pdftex", "perf", 
         "perl", "perlbug", "psexec","pg", "php", "pic", "pidstat", "pip", "pkexec", 
         "plymouth", "podman", "posh", "psftp", "pr","psql","ptx", "puppet", "pwsh", 
-        "pygmentize", "pyright", "other",
+        "pygmentize", "pyright","python","qpdf", "rake", "other",
     }
 
     if start in ALLOWED:
