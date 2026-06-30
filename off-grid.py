@@ -2980,6 +2980,23 @@ def gtfo_bins(gtfo_command, gtfo_options):
         else:
             bins.append("N/A")
 
+    elif gtfo_command == "ranger":
+        if gtfo_options == "shell":
+            bins.append("ranger\ns")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "rc":
+        if gtfo_options == "shell":
+            bins.append("rc")
+        else:
+            bins.append("N/A")
+
+    elif gtfo_command == "readelf":
+        if gtfo_options == "file-read":
+            bins.append("readelf -a @/path/to/input-file")
+        else:
+            bins.append("N/A")
 
 #If there are any other misconfigurations run the other option
     elif gtfo_command == "other":
@@ -3029,7 +3046,7 @@ def main():
         "openvpn", "openvt","opkg","pandoc", "paste", "pax", "pdflatex","pdftex", "perf", 
         "perl", "perlbug", "psexec","pg", "php", "pic", "pidstat", "pip", "pkexec", 
         "plymouth", "podman", "posh", "psftp", "pr","psql","ptx", "puppet", "pwsh", 
-        "pygmentize", "pyright","python","qpdf", "rake", "other",
+        "pygmentize", "pyright","python","qpdf", "rake", "ranger","rc", "readelf", "other",
     }
 
     if start in ALLOWED:
